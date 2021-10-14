@@ -24,7 +24,8 @@ with open(os.path.join(os.path.dirname(__file__), 'cars.json')) as f:
 
 async def get_data(requests, *args, **kwargs):
     func = functools.partial(requests.get, headers=requests.headers, *args, **kwargs)
-    raw_data = asyncio.get_event_loop().run_in_executor(None, func)
+    raw_data_future = await asyncio.get_event_loop().run_in_executor(None, func)
+    raw_data = await raw_data_future
 
     regex_result = re.search(
         r"RACER_INFO: \{\"(.*)\}",
