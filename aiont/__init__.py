@@ -125,6 +125,6 @@ class Team:
             if username == self._captain_username and not include_captain:
                 pass
             else:
-                coruntines.append(username)
+                coruntines.append(get_racer(username))
 
         return await asyncio.gather(*coruntines)
