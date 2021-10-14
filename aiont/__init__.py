@@ -41,11 +41,12 @@ async def get_data(requests, *args, **kwargs):
 
 async def get_racer(username, scraper=None):
     requests = scraper or jsonpickle.decode(random.choice(scrapers))
-    return await get_data(requests, f"https://nitrotype.com/racer/{username}")
+    data = await get_data(requests, f"https://nitrotype.com/racer/{username}")
+    return Racer(data)
     
 
 class Racer:
-    def __init__(self, data, scraper=None):
+    def __init__(self, data):
         if not data:
             return
 
