@@ -51,7 +51,7 @@ async def get_team(tag, scraper=None):
 
     data = json.loads(raw_data.content)
 
-    return Team(data["data"], data["info"])
+    return Team(data["data"])
     
 
 class Racer:
@@ -110,6 +110,7 @@ class Racer:
 
 class Team:
     def __init__(self, data, info):
+        info = data["info"]
         stats = data["stats"]
 
         for stat in stats:
