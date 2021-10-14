@@ -12,8 +12,6 @@ import re
 import json
 import os
 
-loop = asyncio.get_event_loop()
-
 
 with open(os.path.join(os.path.dirname(__file__), 'scrapers.json')) as f:
     scrapers = json.load(f)["scrapers"]
@@ -26,7 +24,7 @@ with open(os.path.join(os.path.dirname(__file__), 'cars.json')) as f:
 
 async def get_data(requests, *args, **kwargs):
     func = functools.partial(requests.get, headers=requests.headers, *args, **kwargs)
-    return await loop.run_in_executor(None, func)
+    return await asyncio.get_event_loop().run_in_executor(None, func)
 
 
 async def get_racer(username, scraper=None):
@@ -62,7 +60,7 @@ class Racer:
             return
 
         self._team_tag = data["tag"]
-        
+
         self.userid = data["userID"]
         self.username = data["username"].title()
         self.name = data["displayName"] or self.username
