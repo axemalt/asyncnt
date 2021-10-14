@@ -20,6 +20,29 @@ with open(os.path.join(os.path.dirname(__file__), 'scrapers.json')) as f:
 with open(os.path.join(os.path.dirname(__file__), 'cars.json')) as f:
     data = json.load(f)["cars"]
     cars = {int(id): name for id, name in data.items()}
+
+
+class AioNT:
+    async def get_data(self, *args, **kwargs):
+        func = functools.partial(self.requests.get, headers=self.requests.headers, *args, **kwargs)
+        raw_data = asyncio.get_event_loop().run_in_executor(None, func)
+
+        regex_result = re.search(
+            r"RACER_INFO: \{\"(.*)\}",
+            raw_data.text.strip()
+        ).group(1)
+
+        data = json.loads(
+            '{"'
+            + regex_result
+            + "}"
+        )
+        return data
+
+    @classmethod
+    async def get_racer(cls, username, scraper=None):
+        cls.requests = scraper or jsonpickle.decode(random.choice(scrapers))
+        return cls(await cls.get_data(f"https://nitrotype.com/racer/{username}"))
     
 
 class Racer:
@@ -70,27 +93,6 @@ class Racer:
             elif car[1] == "sold":
                 self.cars_sold += 1
             self.cars_total += 1 
-
-    async def get_data(self, *args, **kwargs):
-        func = functools.partial(self.requests.get, headers=self.requests.headers, *args, **kwargs)
-        raw_data = asyncio.get_event_loop().run_in_executor(None, func)
-
-        regex_result = re.search(
-            r"RACER_INFO: \{\"(.*)\}",
-            raw_data.text.strip()
-        ).group(1)
-
-        data = json.loads(
-            '{"'
-            + regex_result
-            + "}"
-        )
-        return data
-
-    @classmethod
-    async def get_racer(cls, username, scraper=None):
-        cls.requests = scraper or jsonpickle.decode(random.choice(scrapers))
-        return cls(await cls.get_data(f"https://nitrotype.com/racer/{username}"))
 
 
 class Team:
