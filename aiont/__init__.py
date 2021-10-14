@@ -19,7 +19,7 @@ with open(os.path.join(os.path.dirname(__file__), 'scrapers.json')) as f:
 
 with open(os.path.join(os.path.dirname(__file__), 'cars.json')) as f:
     data = json.load(f)["cars"]
-    cars = {int(id): name for id, name in data}
+    cars = {int(id): name for id, name in data.items()}
     
 
 class Racer:
