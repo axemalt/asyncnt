@@ -3,7 +3,7 @@ __author__ = "axemalt"
 __version__ = "0.0.1"
 
 from datetime import date
-import cloudscrapper
+import cloudscraper
 import jsonpickle
 import functools
 import asyncio
