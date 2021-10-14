@@ -17,12 +17,7 @@ with open('README.md') as f:
     readme = f.read()
 
 packages = [
-    'discord',
-    'discord.types',
-    'discord.ui',
-    'discord.webhook',
-    'discord.ext.commands',
-    'discord.ext.tasks',
+    'aiont'
 ]
 
 setup(name='aiont',
