@@ -10,13 +10,14 @@ import asyncio
 import random
 import re
 import json
+import os
 
 
-with open("./scrapers.json", "r") as f:
+with open(os.path.join(os.path.dirname(__file__), 'scrapers.json')) as f:
     scrapers = json.load(f)["scrapers"]
 
 
-with open("./cars.json", "r") as f:
+with open(os.path.join(os.path.dirname(__file__), 'cars.json')) as f:
     data = json.load(f)["cars"]
     cars = {int(id): name for id, name in data}
     
