@@ -17,11 +17,6 @@ with open(os.path.join(os.path.dirname(__file__), "scrapers.json")) as f:
     scrapers = json.load(f)["scrapers"]
 
 
-with open(os.path.join(os.path.dirname(__file__), "cars.json")) as f:
-    data = json.load(f)["cars"]
-    cars = {int(id): name for id, name in data.items()}
-
-
 async def get_data(requests, *args, **kwargs):
     func = functools.partial(requests.get, headers=requests.headers, *args, **kwargs)
     return await asyncio.get_event_loop().run_in_executor(None, func)
@@ -54,21 +49,17 @@ class Racer:
 
         self._team_tag = data["tag"]
 
-        self.userid = data["userID"]
+        self.user_id = data["userID"]
         self.username = data["username"].title()
         self.name = data["displayName"] or self.username
         self.membership = data["membership"]
         self.level = data["level"]
         self.experience = data["experience"]
         self.views = data["profileViews"]
-        self.current_car = cars.get(data["carID"])
-        self.carid = data["carID"]
+        self.current_car_id = data["carID"]
         self.nitros = data["nitros"]
         self.nitros_used = data["nitrosUsed"]
         self.nitros_total = self.nitros + self.nitros_used
-        self.nitros = self.nitros
-        self.nitros_used = self.nitros_used
-        self.nitros_total = self.nitros_total
         self.races = data["racesPlayed"]
         self.wpm_average = data["avgSpeed"]
         self.wpm_high = data["highestSpeed"]
@@ -77,9 +68,9 @@ class Racer:
         self.created = date.fromtimestamp(data["createdStamp"]).strftime("%d %B %Y")
 
         if data["carHueAngle"] == 0:
-            self.car = f'https://www.nitrotype.com/cars/{data["carID"]}_large_1.png'
+            self.car_img_url = f'https://www.nitrotype.com/cars/{data["carID"]}_large_1.png'
         else:
-            self.car = f'https://www.nitrotype.com/cars/painted/{data["carID"]}_large_1_{data["carHueAngle"]}.png'
+            self.car_img_url = f'https://www.nitrotype.com/cars/painted/{data["carID"]}_large_1_{data["carHueAngle"]}.png'
 
         self.cars_owned = 0
         self.cars_sold = 0
