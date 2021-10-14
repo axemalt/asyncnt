@@ -13,8 +13,7 @@ with open('README.md') as f:
     readme = f.read()
 
 packages = [
-    'aiont',
-    'aiont/AioNT'
+    'aiont'
 ]
 
 setup(name='aiont',
