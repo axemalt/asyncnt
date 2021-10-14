@@ -4,7 +4,6 @@ __version__ = "0.0.1"
 
 from cloudscraper import CloudScraper
 from requests import Response
-from datetime import date
 import jsonpickle
 import functools
 import asyncio
@@ -41,7 +40,7 @@ class Racer:
         self.wpm_high: int = data["highestSpeed"]
         self.friend_reqs_allowed: bool = bool(data["allowFriendRequests"])
         self.looking_for_team: bool = bool(data["lookingForTeam"])
-        self.created: date = data["createdStamp"]
+        self.created: int = data["createdStamp"]
 
         if data["carHueAngle"] == 0:
             self.car_img_url = f'https://www.nitrotype.com/cars/{data["carID"]}_large_1.png'
