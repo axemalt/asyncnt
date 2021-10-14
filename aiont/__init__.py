@@ -12,6 +12,8 @@ import re
 import json
 import os
 
+loop = asyncio.get_event_loop()
+
 
 with open(os.path.join(os.path.dirname(__file__), 'scrapers.json')) as f:
     scrapers = json.load(f)["scrapers"]
@@ -24,7 +26,12 @@ with open(os.path.join(os.path.dirname(__file__), 'cars.json')) as f:
 
 async def get_data(requests, *args, **kwargs):
     func = functools.partial(requests.get, headers=requests.headers, *args, **kwargs)
-    raw_data = await asyncio.get_event_loop().run_in_executor(None, func)
+    return await loop.run_in_executor(None, func)
+
+
+async def get_racer(username, scraper=None):
+    requests = scraper or jsonpickle.decode(random.choice(scrapers))
+    raw_data = await get_data(requests, f"https://nitrotype.com/racer/{username}")
 
     regex_result = re.search(
         r"RACER_INFO: \{\"(.*)\}",
@@ -36,13 +43,17 @@ async def get_data(requests, *args, **kwargs):
         + regex_result
         + "}"
     )
-    return data
 
-
-async def get_racer(username, scraper=None):
-    requests = scraper or jsonpickle.decode(random.choice(scrapers))
-    data = await get_data(requests, f"https://nitrotype.com/racer/{username}")
     return Racer(data)
+
+
+async def get_team(tag, scraper=None):
+    requests = scraper or jsonpickle.decode(random.choice(scrapers))
+    raw_data = await get_data(requests, f"https://nitrotype.com/api/teams/{tag}")
+
+    data = json.loads(raw_data.content)
+
+    return Team(data["data"], data["info"])
     
 
 class Racer:
@@ -50,7 +61,8 @@ class Racer:
         if not data:
             return
 
-        #self.team = Team(data.get("tag"))
+        self._team_tag = data["tag"]
+        
         self.userid = data["userID"]
         self.username = data["username"].title()
         self.name = data["displayName"] or self.username
@@ -94,85 +106,44 @@ class Racer:
                 self.cars_sold += 1
             self.cars_total += 1 
 
+    async def team(self):
+        return await get_team(self._team_tag)
+
 
 class Team:
-    def __init__(self, team, scraper=None):
-        self.requests = jsonpickle.decode(random.choice(scrapers))
-        if scraper:
-            self.requests = scraper
+    def __init__(self, data, info):
+        stats = data["stats"]
 
-        def get(*args, **kwargs):
-            return self.requests.get(headers=self.requests.headers, *args, **kwargs)
-
-        try:
-
-            def api_get(path):
-                return get(f"https://www.nitrotype.com/api/{path}")
-
-            self.data = json.loads(api_get(f"teams/{team}").content)
-            if self.data["success"] == False:
-                return
-
-        except Exception:
-            self.data = {}
-
-        else:
-            self.data = self.data["data"]
-            self.info = self.data["info"]
-
-        stats = self.data["stats"]
         for stat in stats:
-            if stat["board"] == "daily":
-                self.daily_pre = stat
-                self.daily_races = self.daily_pre["played"]
-                self.daily_speed = (
-                    int(self.daily_pre["typed"]) / 5 / self.daily_pre["secs"] * 60
-                )
-                self.daily_accuracy = 100 - (
-                    (int(self.daily_pre["errs"]) / int(self.daily_pre["typed"])) * 100
-                )
-                self.daily_points = (
-                    self.daily_races
-                    * (100 + (self.daily_speed / 2))
-                    * self.daily_accuracy
+            board = stat['board']
+            speed = int(stat["typed"]) / 5 / stat["secs"] * 60
+            accuracy = 100 - int(stat["errs"] / int(stat["typed"])) * 100
+                        
+
+            setattr(self, f"{board}_pre", stat)
+            setattr(self, f"{board}_races", stat["played"])
+            setattr(self, f"{board}_speed", speed)
+            setattr(
+                self,
+                f"{board}_accuracy",
+                accuracy
+            )
+            setattr(
+                self,
+                f"{board}_points",
+                (
+                    stat["played"]
+                    * (100 + speed / 2)
+                    * accuracy
                     / 100
                 )
+            )
 
-            if stat["board"] == "season":
-                self.season_pre = stat
-                self.season_races = self.season_pre["played"]
-                self.season_speed = (
-                    int(self.season_pre["typed"]) / 5 / self.season_pre["secs"] * 60
-                )
-                self.season_accuracy = 100 - (
-                    (int(self.season_pre["errs"]) / int(self.season_pre["typed"])) * 100
-                )
-                self.season_points = (
-                    self.season_races
-                    * (100 + (self.season_speed / 2))
-                    * self.season_accuracy
-                    / 100
-                )
+        self.leaders = []
+        for elem in data["members"]:
+            if elem["role"] == "officer":
+                if elem["username"] == info["username"]:
+                    self.captain = Racer(elem)
 
-            if stat["board"] == "alltime":
-                self.alltime_pre = stat
-                self.alltime_races = self.alltime_pre["played"]
-                self.alltime_speed = (
-                    int(self.alltime_pre["typed"]) / 5 / self.alltime_pre["secs"] * 60
-                )
-                self.alltime_accuracy = 100 - (
-                    (int(self.alltime_pre["errs"]) / int(self.alltime_pre["typed"]))
-                    * 100
-                )
-                self.alltime_points = (
-                    self.alltime_races
-                    * (100 + (self.alltime_speed / 2))
-                    * self.alltime_accuracy
-                    / 100
-                )
-
-            self.leaders = []
-            self.captain = (self.info["username"], self.info["displayName"])
-            for elem in self.data["members"]:
-                if elem["role"] == "officer" and elem["username"] != self.captain[0]:
-                    self.leaders.append((elem["username"], elem["displayName"]))
+                else:
+                    self.leaders.append(Racer(elem))
