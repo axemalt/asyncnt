@@ -109,7 +109,7 @@ class Racer:
 
 
 class Team:
-    def __init__(self, data, info):
+    def __init__(self, data):
         info = data["info"]
         stats = data["stats"]
 
