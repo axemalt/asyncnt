@@ -12,15 +12,14 @@ import re
 import json
 
 
-with open("scrapers.json", "r") as f:
+with open("./scrapers.json", "r") as f:
     scrapers = json.load(f)["scrapers"]
 
 
-with open("cars.json", "r") as f:
+with open("./cars.json", "r") as f:
     data = json.load(f)["cars"]
     cars = {int(id): name for id, name in data}
     
-
 
 class Racer:
     def __init__(self, data, scraper=None):
