@@ -17,14 +17,14 @@ with open(os.path.join(os.path.dirname(__file__), "scrapers.json")) as f:
     scrapers = json.load(f)["scrapers"]
 
 
-async def get_data(requests, *args, **kwargs):
-    func = functools.partial(requests.get, headers=requests.headers, *args, **kwargs)
+async def get_data(scraper=None, *args, **kwargs):
+    scraper = scraper or jsonpickle.decode(random.choice(scrapers))
+    func = functools.partial(scraper.get, headers=scraper.headers, *args, **kwargs)
     return await asyncio.get_event_loop().run_in_executor(None, func)
 
 
 async def get_racer(username, scraper=None):
-    requests = scraper or jsonpickle.decode(random.choice(scrapers))
-    raw_data = await get_data(requests, f"https://nitrotype.com/racer/{username}")
+    raw_data = await get_data(scraper, f"https://nitrotype.com/racer/{username}")
 
     regex_result = re.search(r"RACER_INFO: \{\"(.*)\}", raw_data.text.strip()).group(1)
 
@@ -34,8 +34,7 @@ async def get_racer(username, scraper=None):
 
 
 async def get_team(tag, scraper=None):
-    requests = scraper or jsonpickle.decode(random.choice(scrapers))
-    raw_data = await get_data(requests, f"https://nitrotype.com/api/teams/{tag}")
+    raw_data = await get_data(scraper, f"https://nitrotype.com/api/teams/{tag}")
 
     data = json.loads(raw_data.content)
 
