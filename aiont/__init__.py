@@ -60,7 +60,7 @@ class Racer:
                 self.cars_sold += 1
             self.cars_total += 1
 
-    async def get_team(self) -> Team:
+    async def get_team(self):
         return await get_team(self._team_tag)
 
 
@@ -91,10 +91,10 @@ class Team:
                 (stat["played"] * (100 + speed / 2) * accuracy / 100),
             )
 
-    async def get_captain(self) -> Racer:
+    async def get_captain(self):
         return await get_racer(self._captain_username)
 
-    async def get_leaders(self, *, include_captain=False) -> list[Racer]:
+    async def get_leaders(self, *, include_captain=False) -> list:
         coruntines = []
 
         for username in self._leader_usernames:
