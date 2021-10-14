@@ -24,8 +24,6 @@ with open(os.path.join(os.path.dirname(__file__), 'cars.json')) as f:
 
 class Racer:
     def __init__(self, data, scraper=None):
-        self.requests = scraper or jsonpickle.decode(random.choice(scrapers))
-
         if not data:
             return
 
@@ -90,7 +88,8 @@ class Racer:
         return data
 
     @classmethod
-    async def get_racer(cls, username):
+    async def get_racer(cls, username, scraper=None):
+        cls.requests = scraper or jsonpickle.decode(random.choice(scrapers))
         return cls(await cls.get_data(f"https://nitrotype.com/racer/{username}"))
 
 
