@@ -17,7 +17,7 @@ TM = TypeVar("TM", bound="Team")
 class CloudScraper(cloudscraper.CloudScraper):
     def __init__(self):
         super().__init__()
-        self._session = aiohttp.ClientSession
+        self._session = aiohttp.ClientSession()
 
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
         session = session or self._session
