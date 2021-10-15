@@ -55,7 +55,7 @@ class Racer:
         if not data:
             return
 
-        self.team_tag: str = data["tag"]
+        self.team_tag: str = data.get("tag")
         self.user_id: int = data["userID"]
         self.username: str = data["username"].title()
         self.name: str = data["displayName"] or self.username
@@ -160,17 +160,19 @@ async def get_racer(username: str, *, scraper: CloudScraper = None, session: aio
 
     regex_result: str = re.search(
         r"RACER_INFO: \{\"(.*)\}", text.strip()
-    ).group(1)
-
-    data = json.loads('{"' + regex_result + "}")
-
-    if not data:
+    )
+    if regex_result is None:
         raise InvalidRacerUsername()
+
+    data = json.loads('{"' + regex_result.group(1) + "}")
 
     return Racer(data)
 
 
 async def get_team(tag: str, *, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Team:
+    if tag in [None, ""]:
+        raise InvalidTeamTag()
+        
     scraper = scraper or CloudScraper()
 
     raw_data = await get_data(
