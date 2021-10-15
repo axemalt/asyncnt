@@ -14,18 +14,20 @@ import re
 TM = TypeVar("TM", bound="Team")
 
 
-global_session = aiohttp.ClientSession()
-
-
 class CloudScraper(cloudscraper.CloudScraper):
     def __init__(self):
         super().__init__()
+        self._session = aiohttp.ClientSession
 
     async def get(self, url: str, session: aiohttp.ClientSession) -> aiohttp.ClientResponse:
-        session = session or global_session
+        session = session or self._session
 
         async with session.get(url, headers=self.headers) as response:
             return response
+
+    @classmethod
+    async def close(cls):
+        await cls._session.close()
 
 
 class Racer:
@@ -153,5 +155,4 @@ async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: Clo
 
     return Team(data["data"])
 
-async def close():
-    await global_session.close()
+close = CloudScraper.close
