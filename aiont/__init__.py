@@ -1,8 +1,10 @@
+from __future__ import annotations
+
+
 __title__ = "aiont"
 __author__ = "axemalt"
 __version__ = "0.0.1"
 
-from __future__ import annotations
 
 from typing import Optional, List, Dict
 import cloudscraper
