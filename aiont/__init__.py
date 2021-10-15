@@ -21,6 +21,7 @@ class CloudScraper(cloudscraper.CloudScraper):
         self._event = asyncio.Event()
         self._session = aiohttp.ClientSession()
         print(self._session.closed)
+        print(self._event.is_set())
 
     def __del__(self):
         loop = asyncio.get_event_loop()
@@ -35,6 +36,7 @@ class CloudScraper(cloudscraper.CloudScraper):
 
     async def close(self) -> None:
         if not self._session.closed:
+            print(self._event.is_set())
             await self._event.wait()
             print("closing")
             await self._session.close()
