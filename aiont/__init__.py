@@ -45,7 +45,7 @@ class CloudScraper(cloudscraper.CloudScraper):
 
     async def close(self) -> None:
         if not self.session.closed:
-            await self.event.wait()
+            #await self.event.wait()
 
             await self.session.close()
 
