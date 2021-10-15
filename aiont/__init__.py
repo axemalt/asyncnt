@@ -132,9 +132,10 @@ async def get_racer(username: str, session: aiohttp.ClientSession = None, scrape
         session,
         scraper
     )
-
+    text = await raw_data.text()
+    
     regex_result: str = re.search(
-        r"RACER_INFO: \{\"(.*)\}", raw_data.text.strip()
+        r"RACER_INFO: \{\"(.*)\}", text.strip()
     ).group(1)
 
     data = json.loads('{"' + regex_result + "}")
