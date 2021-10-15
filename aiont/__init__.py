@@ -4,7 +4,6 @@ __version__ = "0.0.1"
 
 from typing import TypeVar, List
 import cloudscraper
-import jsonpickle
 import asyncio
 import aiohttp
 import json
@@ -18,29 +17,23 @@ class CloudScraper(cloudscraper.CloudScraper):
     def __init__(self):
         super().__init__()
 
-        self._event = asyncio.Event()
+        self.event = asyncio.Event()
         self._session = aiohttp.ClientSession()
 
     def __del__(self):
         loop = asyncio.get_event_loop()
-        print("creating task to close")
         loop.create_task(self.close())
 
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
         session = session or self._session
 
-        return await session.get(url, headers=self.headers), self._event
+        return await session.get(url, headers=self.headers), self.event
 
     async def close(self) -> None:
         if not self._session.closed:
-            print(f"event is set: {self._event.is_set()}")
-            print("waiting for event")
             await self._event.wait()
-            print("closing")
+
             await self._session.close()
-            print("done closing")
-        else:
-            print('session is closed')
 
 
 class Racer:
@@ -165,11 +158,8 @@ async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: Clo
         session,
         scraper
     )
-    print("texting")
     data = await raw_data.json()
-    print("setting event")
 
     event.set()
-    print("done texting")
 
     return Team(data["data"])
