@@ -20,10 +20,11 @@ class CloudScraper(cloudscraper.CloudScraper):
 
         self._event = asyncio.Event()
         self._session = aiohttp.ClientSession()
-        print("hi")
+        print(self._session.closed)
 
     def __del__(self):
         loop = asyncio.get_event_loop()
+        print("creating task to close")
         loop.create_task(self.close())
 
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
