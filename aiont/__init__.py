@@ -167,6 +167,7 @@ async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: Clo
         scraper
     )
     print("texting")
+    print(f"session is closed: {session.closed}")
     data = await raw_data.json()
     print("setting event")
 
