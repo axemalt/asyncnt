@@ -2,33 +2,57 @@ __title__ = "aiont"
 __author__ = "axemalt"
 __version__ = "0.0.1"
 
-from typing import TypeVar, List
+from __future__ import annotations
+
+from typing import (
+    Optional,
+    Any,
+    List,
+    Dict
+)
 import cloudscraper
 import asyncio
 import aiohttp
 import json
 import re
 
-
-TM = TypeVar("TM", bound="Team")
-
 class AioNTException(Exception):
     pass
 
 
 class InvalidRacerUsername(AioNTException):
-    def __init__(self):
+    def __init__(self) -> None:
         message = "The username provided is invalid."
         super().__init__(message)
 
 class InvalidTeamTag(AioNTException):
-    def __init__(self):
+    def __init__(self) -> None:
         message = "The tag provided is invalid."
         super().__init__(message)
 
 
+class HTTPException(AioNTException):
+    def __init__(self, response: aiohttp.ClientResponse):
+        self.response = response
+        self.status: int = response.status
+        self.code: int
+        self.code = 0
+
+        fmt = '{0.status} {0.reason} (error code: {1})'
+
+        super().__init__(fmt.format(self.response, self.code))
+        
+
+class Forbidden(HTTPException):
+    pass
+
+
+class NotFound(HTTPException):
+    pass
+
+
 class Racer:
-    def __init__(self, data: dict, *, scraper) -> None:
+    def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
 
         self.team_tag: str = data.get("tag")
@@ -69,16 +93,16 @@ class Racer:
                 self.cars_sold += 1
             self.cars_total += 1
 
-    async def get_team(self) -> TM:
+    async def get_team(self) -> Team:
         return await self._scraper.get_team(self.team_tag)
 
 
 class Team:
-    def __init__(self, data: dict, *, scraper) -> None:
+    def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
 
-        info: dict = data["info"]
-        stats: dict = data["stats"]
+        info: Dict = data["info"]
+        stats: Dict = data["stats"]
 
         self.captain_username: str = info["username"]
         self.leader_usernames: List[str] = [
@@ -118,28 +142,38 @@ class Team:
 
 
 class Session(cloudscraper.CloudScraper):
-    def __init__(self, *, session=None):
+    __slots__ = ["_session", "headers"]
+
+    def __init__(self, *, session: Optional[aiohttp.ClientSession] = None) -> None:
         super().__init__()
-        
+
         self._session = session or aiohttp.ClientSession()
 
-    def __del__(self):
+    def __del__(self) -> None:
         if not self._session.closed:
-            loop = asyncio.get_event_loop()
+            loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
             loop.create_task(self._session.close())
 
-    async def _get(self, url: str, *, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
+    async def _get(self, url: str, *, session: Optional[aiohttp.ClientSession] = None) -> aiohttp.ClientResponse:
         session = session or self._session
 
-        return await session.get(url, headers=self.headers)
+        response: aiohttp.ClientResponse = await session.get(url, headers=self.headers)
+        
+        if response.status == 200:
+            return response
+        elif response.status == 403:
+            raise Forbidden(response)
+        elif response.status == 404:
+            raise NotFound(response)
+        else:
+            raise HTTPException(response)
 
-    async def get_racer(self, username: str, *, session: aiohttp.ClientSession = None) -> Racer:
-
+    async def get_racer(self, username: str, *, session: Optional[aiohttp.ClientSession] = None) -> Racer:
         raw_data: aiohttp.ClientResponse = await self._get(
             f"https://nitrotype.com/racer/{username}",
             session=session
         )
-        text = await raw_data.text()
+        text: str = await raw_data.text()
 
         regex_result: str = re.search(
             r"RACER_INFO: \{\"(.*)\}", text.strip()
@@ -147,7 +181,7 @@ class Session(cloudscraper.CloudScraper):
         if regex_result is None:
             raise InvalidRacerUsername
 
-        data = json.loads('{"' + regex_result.group(1) + "}")
+        data: Dict = json.loads('{"' + regex_result.group(1) + "}")
 
         return Racer(data, scraper=self)
 
@@ -157,7 +191,7 @@ class Session(cloudscraper.CloudScraper):
             f"https://nitrotype.com/api/teams/{tag}",
             session=session
         )
-        data = await raw_data.json()
+        data: Dict = await raw_data.json()
 
         if not data["data"].get("info"):
             raise InvalidTeamTag
