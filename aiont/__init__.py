@@ -135,7 +135,7 @@ class Team:
 async def get_racer(username: str, *, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Racer:
     scraper = scraper or CloudScraper()
 
-    raw_data = await scraper.get(
+    raw_data: aiohttp.ClientResponse = await scraper.get(
         f"https://nitrotype.com/racer/{username}",
         session=session
     )
@@ -157,7 +157,7 @@ async def get_racer(username: str, *, scraper: CloudScraper = None, session: aio
 async def get_team(tag: str, *, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Team:
     scraper = scraper or CloudScraper()
 
-    raw_data = await scraper.get(
+    raw_data: aiohttp.ClientResponse = await scraper.get(
         f"https://nitrotype.com/api/teams/{tag}",
         session=session
     )
