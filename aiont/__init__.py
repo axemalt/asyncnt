@@ -2,19 +2,31 @@ __title__ = "aiont"
 __author__ = "axemalt"
 __version__ = "0.0.1"
 
-from cloudscraper import CloudScraper
-from requests import Response
+from typing import TypeVar
+import cloudscraper
 import jsonpickle
-import functools
 import asyncio
-import random
-import re
+import aiohttp
 import json
-import os
+import re
 
 
-with open(os.path.join(os.path.dirname(__file__), "scrapers.json")) as f:
-    scrapers = json.load(f)["scrapers"]
+TM = TypeVar("TM", bound="Team")
+
+
+class CloudScraper(cloudscraper.CloudScraper):
+    def __init__(self):
+        super().__init__()
+        self._session = aiohttp.ClientSession()
+
+    async def get(self, session: aiohttp.ClientSession, url: str) -> aiohttp.ClientResponse:
+        session = session or self._session
+
+        async with session.get(url, headers=self.headers) as response:
+            return response
+
+    async def close(self):
+        await self._session.close()
 
 
 class Racer:
@@ -22,8 +34,7 @@ class Racer:
         if not data:
             return
 
-        self._team_tag: str = data["tag"]
-
+        self.team_tag: str = data["tag"]
         self.user_id: int = data["userID"]
         self.username: str = data["username"].title()
         self.name: str = data["displayName"] or self.username
@@ -43,7 +54,9 @@ class Racer:
         self.created: int = data["createdStamp"]
 
         if data["carHueAngle"] == 0:
-            self.car_img_url = f'https://www.nitrotype.com/cars/{data["carID"]}_large_1.png'
+            self.car_img_url = (
+                f'https://www.nitrotype.com/cars/{data["carID"]}_large_1.png'
+            )
         else:
             self.car_img_url = f'https://www.nitrotype.com/cars/painted/{data["carID"]}_large_1_{data["carHueAngle"]}.png'
 
@@ -59,8 +72,8 @@ class Racer:
                 self.cars_sold += 1
             self.cars_total += 1
 
-    async def get_team(self):
-        return await get_team(self._team_tag)
+    async def get_team(self) -> TM:
+        return await get_team(self.team_tag)
 
 
 class Team:
@@ -68,8 +81,8 @@ class Team:
         info: dict = data["info"]
         stats: dict = data["stats"]
 
-        self._captain_username: str = info["username"]
-        self._leader_usernames: list[str] = [
+        self.captain_username: str = info["username"]
+        self.leader_usernames: list[str] = [
             member["username"]
             for member in data["members"]
             if member["role"] == "officer"
@@ -90,14 +103,14 @@ class Team:
                 (stat["played"] * (100 + speed / 2) * accuracy / 100),
             )
 
-    async def get_captain(self):
-        return await get_racer(self._captain_username)
+    async def get_captain(self) -> Racer:
+        return await get_racer(self.captain_username)
 
-    async def get_leaders(self, *, include_captain=False) -> list:
+    async def get_leaders(self, *, include_captain=False) -> list[Racer]:
         coruntines = []
 
-        for username in self._leader_usernames:
-            if username == self._captain_username and not include_captain:
+        for username in self.leader_usernames:
+            if username == self.captain_username and not include_captain:
                 pass
             else:
                 coruntines.append(get_racer(username))
@@ -105,25 +118,38 @@ class Team:
         return await asyncio.gather(*coruntines)
 
 
-async def get_data(scraper: CloudScraper=None, *args, **kwargs)-> Response:
-    scraper = scraper or jsonpickle.decode(random.choice(scrapers))
-    func = functools.partial(scraper.get, headers=scraper.headers, *args, **kwargs)
-    return await asyncio.get_event_loop().run_in_executor(None, func)
+async def get_data(url: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> aiohttp.ClientResponse:
+    scraper = scraper or CloudScraper()
+    return await scraper.get(
+        url,
+        session,
+        headers=scraper.headers
+    )
 
 
-async def get_racer(username: str, scraper: CloudScraper=None) -> Racer:
-    raw_data: Response = await get_data(scraper, f"https://nitrotype.com/racer/{username}")
+async def get_racer(username: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> Racer:
+    raw_data = await get_data(
+        scraper,
+        session,
+        f"https://nitrotype.com/racer/{username}"
+    )
 
-    regex_result: str = re.search(r"RACER_INFO: \{\"(.*)\}", raw_data.text.strip()).group(1)
+    regex_result: str = re.search(
+        r"RACER_INFO: \{\"(.*)\}", raw_data.text.strip()
+    ).group(1)
 
-    data: dict = json.loads('{"' + regex_result + "}")
+    data = json.loads('{"' + regex_result + "}")
 
     return Racer(data)
 
 
-async def get_team(tag: str, scraper: CloudScraper=None) -> Team:
-    raw_data: Response = await get_data(scraper, f"https://nitrotype.com/api/teams/{tag}")
+async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> Team:
+    raw_data = await get_data(
+        scraper,
+        session,
+        f"https://nitrotype.com/api/teams/{tag}"
+    )
 
-    data: dict = json.loads(raw_data.content)
+    data = json.loads(raw_data.content)
 
     return Team(data["data"])
