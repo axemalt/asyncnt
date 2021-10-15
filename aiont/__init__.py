@@ -20,8 +20,6 @@ class CloudScraper(cloudscraper.CloudScraper):
 
         self._event = asyncio.Event()
         self._session = aiohttp.ClientSession()
-        print(self._session.closed)
-        print(self._event.is_set())
 
     def __del__(self):
         loop = asyncio.get_event_loop()
@@ -37,6 +35,7 @@ class CloudScraper(cloudscraper.CloudScraper):
     async def close(self) -> None:
         if not self._session.closed:
             print(self._event.is_set())
+            print("waiting for event")
             await self._event.wait()
             print("closing")
             await self._session.close()
@@ -169,6 +168,7 @@ async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: Clo
     )
     print("texting")
     data = await raw_data.json()
+    print("setting event")
 
     scraper._event.set()
     print("done texting")
