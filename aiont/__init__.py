@@ -38,6 +38,8 @@ class CloudScraper(cloudscraper.CloudScraper):
             print("closing")
             await self._session.close()
             print("done closing")
+        else:
+            print('session is closed')
 
 
 class Racer:
