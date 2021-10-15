@@ -17,10 +17,21 @@ TM = TypeVar("TM", bound="Team")
 class CloudScraper(cloudscraper.CloudScraper):
     def __init__(self):
         super().__init__()
+        self._session = aiohttp.ClientSession()
+
+    def __del__(self):
+        loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
+        loop.create_task(self.close())
 
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
+        session = session or self._session
+
         async with session.get(url, headers=self.headers) as response:
             return response
+
+    async def close(self) -> None:
+        if not self._session.closed:
+            await self._session.close()
 
 
 class Racer:
@@ -121,15 +132,12 @@ async def get_data(url: str, session: aiohttp.ClientSession = None, scraper: Clo
 
 
 async def get_racer(username: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> Racer:
-    session = session or aiohttp.ClientSession()
-
-    async with session:
-        raw_data = await get_data(
-            f"https://nitrotype.com/racer/{username}",
-            session,
-            scraper
-        )
-        text = await raw_data.text()
+    raw_data = await get_data(
+        f"https://nitrotype.com/racer/{username}",
+        session,
+        scraper
+    )
+    text = await raw_data.text()
 
     regex_result: str = re.search(
         r"RACER_INFO: \{\"(.*)\}", text.strip()
@@ -141,14 +149,11 @@ async def get_racer(username: str, session: aiohttp.ClientSession = None, scrape
 
 
 async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> Team:
-    session = session or aiohttp.ClientSession()
-
-    async with session:
-        raw_data = await get_data(
-            f"https://nitrotype.com/api/teams/{tag}",
-            session,
-            scraper
-        )
-        data = await raw_data.json()
+    raw_data = await get_data(
+        f"https://nitrotype.com/api/teams/{tag}",
+        session,
+        scraper
+    )
+    data = await raw_data.json()
 
     return Team(data["data"])
