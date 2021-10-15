@@ -19,7 +19,7 @@ class CloudScraper(cloudscraper.CloudScraper):
         super().__init__()
 
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
-        session = session or aiohttp.Client.Session()
+        session = session or aiohttp.ClientSession()
 
         async with session:
             async with session.get(url, headers=self.headers) as response:
