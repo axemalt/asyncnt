@@ -12,6 +12,20 @@ import re
 
 TM = TypeVar("TM", bound="Team")
 
+class AioNTException(Exception):
+    pass
+
+
+class InvalidRacerUsername(AioNTException):
+    def __init__(self):
+        message = "The username provided is invalid."
+        super().__init__(message)
+
+class InvalidTeamTag(AioNTException):
+    def __init__(self):
+        message = "The tag provided is invalid."
+        super().__init__(message)
+
 
 class CloudScraper(cloudscraper.CloudScraper):
     def __init__(self):
@@ -150,10 +164,13 @@ async def get_racer(username: str, *, scraper: CloudScraper = None, session: aio
 
     data = json.loads('{"' + regex_result + "}")
 
+    if not data:
+        raise InvalidRacerUsername()
+
     return Racer(data)
 
 
-async def get_team(tag: str, *, scraper: CloudScraper= None, session: aiohttp.ClientSession = None) -> Team:
+async def get_team(tag: str, *, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Team:
     scraper = scraper or CloudScraper()
 
     raw_data = await get_data(
@@ -164,5 +181,8 @@ async def get_team(tag: str, *, scraper: CloudScraper= None, session: aiohttp.Cl
     data = await raw_data.json()
 
     scraper.event.set()
+
+    if not data:
+        raise InvalidTeamTag()
 
     return Team(data["data"])
