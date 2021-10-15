@@ -162,7 +162,7 @@ async def get_racer(username: str, *, scraper: CloudScraper = None, session: aio
         r"RACER_INFO: \{\"(.*)\}", text.strip()
     )
     if regex_result is None:
-        raise InvalidRacerUsername()
+        raise InvalidRacerUsername
 
     data = json.loads('{"' + regex_result.group(1) + "}")
 
@@ -182,6 +182,6 @@ async def get_team(tag: str, *, scraper: CloudScraper = None, session: aiohttp.C
     scraper.event.set()
 
     if not data["data"].get("info"):
-        raise InvalidTeamTag()
+        raise InvalidTeamTag
 
     return Team(data["data"])
