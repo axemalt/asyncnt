@@ -2,7 +2,7 @@ __title__ = "aiont"
 __author__ = "axemalt"
 __version__ = "0.0.1"
 
-from typing import TypeVar
+from typing import TypeVar, List
 import cloudscraper
 import jsonpickle
 import asyncio
@@ -82,7 +82,7 @@ class Team:
         stats: dict = data["stats"]
 
         self.captain_username: str = info["username"]
-        self.leader_usernames: list[str] = [
+        self.leader_usernames: List[str] = [
             member["username"]
             for member in data["members"]
             if member["role"] == "officer"
@@ -106,7 +106,7 @@ class Team:
     async def get_captain(self) -> Racer:
         return await get_racer(self.captain_username)
 
-    async def get_leaders(self, *, include_captain=False) -> list[Racer]:
+    async def get_leaders(self, *, include_captain=False) -> List[Racer]:
         coruntines = []
 
         for username in self.leader_usernames:
