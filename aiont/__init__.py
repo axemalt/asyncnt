@@ -27,15 +27,16 @@ class CloudScraper(cloudscraper.CloudScraper):
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
         print("getting")
         session = session or self._session
-        print(self.headers)
 
         async with session.get(url, headers=self.headers) as response:
+            print("done getting")
             return response
 
     async def close(self) -> None:
         if not self._session.closed:
             print("closing")
             await self._session.close()
+            print("done closing")
 
 
 class Racer:
@@ -160,5 +161,6 @@ async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: Clo
     )
     print("texting")
     data = await raw_data.json()
+    print("done texting")
 
     return Team(data["data"])
