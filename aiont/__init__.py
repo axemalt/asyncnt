@@ -120,6 +120,7 @@ class Team:
 
 async def get_data(url: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> aiohttp.ClientResponse:
     scraper = scraper or CloudScraper()
+    print(scraper)
     return await scraper.get(
         url,
         session,
