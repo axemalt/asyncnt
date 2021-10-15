@@ -11,7 +11,6 @@ import re
 
 
 TM = TypeVar("TM", bound="Team")
-#SN = TypeVar("SN", bound="Session")
 
 class AioNTException(Exception):
     pass
@@ -91,7 +90,7 @@ class Racer:
 
 
 class Team:
-    def __init__(self, data: dict, *, scraper: S) -> None:
+    def __init__(self, data: dict, *, scraper) -> None:
         self._scraper = scraper
 
         info: dict = data["info"]
