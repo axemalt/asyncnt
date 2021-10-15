@@ -120,7 +120,6 @@ class Team:
 
 async def get_data(url: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> aiohttp.ClientResponse:
     scraper = scraper or CloudScraper()
-    print(scraper)
     return await scraper.get(
         url,
         session,
@@ -130,9 +129,9 @@ async def get_data(url: str, session: aiohttp.ClientSession = None, scraper: Clo
 
 async def get_racer(username: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> Racer:
     raw_data = await get_data(
-        scraper,
+        f"https://nitrotype.com/racer/{username}",
         session,
-        f"https://nitrotype.com/racer/{username}"
+        scraper
     )
 
     regex_result: str = re.search(
@@ -146,9 +145,9 @@ async def get_racer(username: str, session: aiohttp.ClientSession = None, scrape
 
 async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> Team:
     raw_data = await get_data(
-        scraper,
+        f"https://nitrotype.com/api/teams/{tag}",
         session,
-        f"https://nitrotype.com/api/teams/{tag}"
+        scraper
     )
 
     data = json.loads(raw_data.content)
