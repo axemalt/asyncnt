@@ -132,7 +132,7 @@ async def get_data(url: str, scraper: CloudScraper, session: aiohttp.ClientSessi
     )
 
 
-async def get_racer(username: str, scraper: CloudScraper, session: aiohttp.ClientSession = None) -> Racer:
+async def get_racer(username: str, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Racer:
     scraper = scraper or CloudScraper()
 
     raw_data = await get_data(
@@ -153,7 +153,7 @@ async def get_racer(username: str, scraper: CloudScraper, session: aiohttp.Clien
     return Racer(data)
 
 
-async def get_team(tag: str, scraper: CloudScraper, session: aiohttp.ClientSession = None) -> Team:
+async def get_team(tag: str, scraper: CloudScraper= None, session: aiohttp.ClientSession = None) -> Team:
     scraper = scraper or CloudScraper()
 
     raw_data = await get_data(
