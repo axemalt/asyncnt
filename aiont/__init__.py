@@ -170,9 +170,6 @@ async def get_racer(username: str, *, scraper: CloudScraper = None, session: aio
 
 
 async def get_team(tag: str, *, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Team:
-    if tag in [None, ""]:
-        raise InvalidTeamTag()
-        
     scraper = scraper or CloudScraper()
 
     raw_data = await get_data(
@@ -184,7 +181,7 @@ async def get_team(tag: str, *, scraper: CloudScraper = None, session: aiohttp.C
 
     scraper.event.set()
 
-    if not data:
+    if not data["data"].get("info"):
         raise InvalidTeamTag()
 
     return Team(data["data"])
