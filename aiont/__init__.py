@@ -32,22 +32,22 @@ class CloudScraper(cloudscraper.CloudScraper):
         super().__init__()
 
         self.event = asyncio.Event()
-        self._session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession()
 
-    def __del__(self):
+    """def __del__(self):
         loop = asyncio.get_event_loop()
-        loop.create_task(self.close())
+        loop.create_task(self.close())"""
 
     async def get(self, url: str, *, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
-        session = session or self._session
+        session = session or self.session
 
         return await session.get(url, headers=self.headers)
 
     async def close(self) -> None:
-        if not self._session.closed:
+        if not self.session.closed:
             await self.event.wait()
 
-            await self._session.close()
+            await self.session.close()
 
 
 class Racer:
@@ -179,7 +179,8 @@ async def get_team(tag: str, *, scraper: CloudScraper = None, session: aiohttp.C
     )
     data = await raw_data.json()
 
-    scraper.event.set()
+    #scraper.event.set()
+    await scraper.close()
 
     if not data["data"].get("info"):
         raise InvalidTeamTag
