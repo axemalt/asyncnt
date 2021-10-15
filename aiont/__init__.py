@@ -17,6 +17,8 @@ TM = TypeVar("TM", bound="Team")
 class CloudScraper(cloudscraper.CloudScraper):
     def __init__(self):
         super().__init__()
+
+        self._event = asyncio.Event()
         self._session = aiohttp.ClientSession()
         print("hi")
 
@@ -25,15 +27,14 @@ class CloudScraper(cloudscraper.CloudScraper):
         loop.create_task(self.close())
 
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
-        print("getting")
         session = session or self._session
 
         async with session.get(url, headers=self.headers) as response:
-            print("done getting")
             return response
 
     async def close(self) -> None:
         if not self._session.closed:
+            await self._event.wait()
             print("closing")
             await self._session.close()
             print("done closing")
@@ -144,6 +145,8 @@ async def get_racer(username: str, session: aiohttp.ClientSession = None, scrape
     )
     text = await raw_data.text()
 
+    scraper._event.set()
+
     regex_result: str = re.search(
         r"RACER_INFO: \{\"(.*)\}", text.strip()
     ).group(1)
@@ -161,6 +164,8 @@ async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: Clo
     )
     print("texting")
     data = await raw_data.json()
+
+    scraper._event.set()
     print("done texting")
 
     return Team(data["data"])
