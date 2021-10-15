@@ -24,7 +24,7 @@ class CloudScraper(cloudscraper.CloudScraper):
         loop = asyncio.get_event_loop()
         loop.create_task(self.close())
 
-    async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
+    async def get(self, url: str, *, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
         session = session or self._session
 
         return await session.get(url, headers=self.headers)
@@ -125,20 +125,20 @@ class Team:
         return await asyncio.gather(*coruntines)
 
 
-async def get_data(url: str, scraper: CloudScraper, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
+async def get_data(url: str, *, scraper: CloudScraper, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
     return await scraper.get(
         url,
-        session
+        session=session
     )
 
 
-async def get_racer(username: str, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Racer:
+async def get_racer(username: str, *, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Racer:
     scraper = scraper or CloudScraper()
 
     raw_data = await get_data(
         f"https://nitrotype.com/racer/{username}",
-        session,
-        scraper
+        scraper=scraper,
+        session=session
     )
     text = await raw_data.text()
 
@@ -153,13 +153,13 @@ async def get_racer(username: str, scraper: CloudScraper = None, session: aiohtt
     return Racer(data)
 
 
-async def get_team(tag: str, scraper: CloudScraper= None, session: aiohttp.ClientSession = None) -> Team:
+async def get_team(tag: str, *, scraper: CloudScraper= None, session: aiohttp.ClientSession = None) -> Team:
     scraper = scraper or CloudScraper()
 
     raw_data = await get_data(
         f"https://nitrotype.com/api/teams/{tag}",
-        scraper,
-        session
+        scraper=scraper,
+        session=session
     )
     data = await raw_data.json()
 
