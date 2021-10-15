@@ -31,12 +31,7 @@ class CloudScraper(cloudscraper.CloudScraper):
     def __init__(self):
         super().__init__()
 
-        self.event = asyncio.Event()
         self.session = aiohttp.ClientSession()
-
-    """def __del__(self):
-        loop = asyncio.get_event_loop()
-        loop.create_task(self.close())"""
 
     async def get(self, url: str, *, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
         session = session or self.session
@@ -45,8 +40,6 @@ class CloudScraper(cloudscraper.CloudScraper):
 
     async def close(self) -> None:
         if not self.session.closed:
-            #await self.event.wait()
-
             await self.session.close()
 
 
@@ -156,7 +149,7 @@ async def get_racer(username: str, *, scraper: CloudScraper = None, session: aio
     )
     text = await raw_data.text()
 
-    scraper.event.set()
+    await scraper.close()
 
     regex_result: str = re.search(
         r"RACER_INFO: \{\"(.*)\}", text.strip()
@@ -179,7 +172,6 @@ async def get_team(tag: str, *, scraper: CloudScraper = None, session: aiohttp.C
     )
     data = await raw_data.json()
 
-    #scraper.event.set()
     await scraper.close()
 
     if not data["data"].get("info"):
