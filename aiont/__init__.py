@@ -30,7 +30,7 @@ class CloudScraper(cloudscraper.CloudScraper):
         session = session or self._session
 
         async with session.get(url, headers=self.headers) as response:
-            return response
+            return response, session.closed
 
     async def close(self) -> None:
         if not self._session.closed:
@@ -161,13 +161,13 @@ async def get_racer(username: str, session: aiohttp.ClientSession = None, scrape
 
 
 async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> Team:
-    raw_data = await get_data(
+    raw_data, closed = await get_data(
         f"https://nitrotype.com/api/teams/{tag}",
         session,
         scraper
     )
     print("texting")
-    print(f"session is closed: {session.closed}")
+    print(f"session is closed: {closed}")
     data = await raw_data.json()
     print("setting event")
 
