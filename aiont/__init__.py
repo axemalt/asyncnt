@@ -17,17 +17,13 @@ TM = TypeVar("TM", bound="Team")
 class CloudScraper(cloudscraper.CloudScraper):
     def __init__(self):
         super().__init__()
-        self._session = aiohttp.ClientSession()
 
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
-        session = session or self._session
+        session = session or aiohttp.Client.Session()
 
-        async with session.get(url, headers=self.headers) as response:
-            return response
-
-    @classmethod
-    async def close(cls):
-        await cls._session.close()
+        async with session:
+            async with session.get(url, headers=self.headers) as response:
+                return response
 
 
 class Racer:
@@ -154,5 +150,3 @@ async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: Clo
     data = json.loads(raw_data.content)
 
     return Team(data["data"])
-
-close = CloudScraper.close
