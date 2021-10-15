@@ -29,8 +29,8 @@ class CloudScraper(cloudscraper.CloudScraper):
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
         session = session or self._session
 
-        async with session.get(url, headers=self.headers) as response:
-            return response, session.closed
+        #async with session.get(url, headers=self.headers) as response:
+        return await session.get(url, headers=self.headers), session.closed
 
     async def close(self) -> None:
         if not self._session.closed:
