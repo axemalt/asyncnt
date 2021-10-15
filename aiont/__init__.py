@@ -11,6 +11,7 @@ import re
 
 
 TM = TypeVar("TM", bound="Team")
+#SN = TypeVar("SN", bound="Session")
 
 class AioNTException(Exception):
     pass
@@ -44,9 +45,8 @@ class CloudScraper(cloudscraper.CloudScraper):
 
 
 class Racer:
-    def __init__(self, data: dict) -> None:
-        if not data:
-            return
+    def __init__(self, data: dict, *, scraper) -> None:
+        self._scraper = scraper
 
         self.team_tag: str = data.get("tag")
         self.user_id: int = data["userID"]
@@ -87,11 +87,13 @@ class Racer:
             self.cars_total += 1
 
     async def get_team(self) -> TM:
-        return await get_team(self.team_tag)
+        return await self._scraper.get_team(self.team_tag)
 
 
 class Team:
-    def __init__(self, data: dict) -> None:
+    def __init__(self, data: dict, *, scraper: S) -> None:
+        self._scraper = scraper
+
         info: dict = data["info"]
         stats: dict = data["stats"]
 
@@ -118,7 +120,7 @@ class Team:
             )
 
     async def get_captain(self) -> Racer:
-        return await get_racer(self.captain_username)
+        return await self._scraper.get_racer(self.captain_username)
 
     async def get_leaders(self, *, include_captain=False) -> List[Racer]:
         coruntines = []
@@ -127,45 +129,52 @@ class Team:
             if username == self.captain_username and not include_captain:
                 pass
             else:
-                coruntines.append(get_racer(username))
+                coruntines.append(self._scraper.get_racer(username))
 
         return await asyncio.gather(*coruntines)
 
 
-async def get_racer(username: str, *, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Racer:
-    scraper = scraper or CloudScraper()
+class Session:
+    def __init__(self, *, session=None):
+        self._session = session or aiohttp.ClientSession()
 
-    raw_data: aiohttp.ClientResponse = await scraper.get(
-        f"https://nitrotype.com/racer/{username}",
-        session=session
-    )
-    text = await raw_data.text()
+    def __del__(self):
+        if not self._session.closed:
+            loop = asyncio.get_event_loop()
+            loop.create_task(self._session.close())
 
-    await scraper.close()
+    async def _get(self, url: str, *, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
+        session = session or self._session
 
-    regex_result: str = re.search(
-        r"RACER_INFO: \{\"(.*)\}", text.strip()
-    )
-    if regex_result is None:
-        raise InvalidRacerUsername
+        return await session.get(url, headers=self.headers)
 
-    data = json.loads('{"' + regex_result.group(1) + "}")
+    async def get_racer(self, username: str, *, session: aiohttp.ClientSession = None) -> Racer:
 
-    return Racer(data)
+        raw_data: aiohttp.ClientResponse = await self._get(
+            f"https://nitrotype.com/racer/{username}",
+            session=session
+        )
+        text = await raw_data.text()
+
+        regex_result: str = re.search(
+            r"RACER_INFO: \{\"(.*)\}", text.strip()
+        )
+        if regex_result is None:
+            raise InvalidRacerUsername
+
+        data = json.loads('{"' + regex_result.group(1) + "}")
+
+        return Racer(data, scraper=self)
 
 
-async def get_team(tag: str, *, scraper: CloudScraper = None, session: aiohttp.ClientSession = None) -> Team:
-    scraper = scraper or CloudScraper()
+    async def get_team(self, tag: str, *, session: aiohttp.ClientSession = None) -> Team:
+        raw_data: aiohttp.ClientResponse = await self._get(
+            f"https://nitrotype.com/api/teams/{tag}",
+            session=session
+        )
+        data = await raw_data.json()
 
-    raw_data: aiohttp.ClientResponse = await scraper.get(
-        f"https://nitrotype.com/api/teams/{tag}",
-        session=session
-    )
-    data = await raw_data.json()
+        if not data["data"].get("info"):
+            raise InvalidTeamTag
 
-    await scraper.close()
-
-    if not data["data"].get("info"):
-        raise InvalidTeamTag
-
-    return Team(data["data"])
+        return Team(data["data"], scraper=self)
