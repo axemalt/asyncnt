@@ -27,22 +27,6 @@ class InvalidTeamTag(AioNTException):
         super().__init__(message)
 
 
-class CloudScraper(cloudscraper.CloudScraper):
-    def __init__(self):
-        super().__init__()
-
-        self.session = aiohttp.ClientSession()
-
-    async def get(self, url: str, *, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
-        session = session or self.session
-
-        return await session.get(url, headers=self.headers)
-
-    async def close(self) -> None:
-        if not self.session.closed:
-            await self.session.close()
-
-
 class Racer:
     def __init__(self, data: dict, *, scraper) -> None:
         self._scraper = scraper
@@ -133,8 +117,10 @@ class Team:
         return await asyncio.gather(*coruntines)
 
 
-class Session:
+class Session(cloudscraper.CloudScraper):
     def __init__(self, *, session=None):
+        super().__init__()
+        
         self._session = session or aiohttp.ClientSession()
 
     def __del__(self):
