@@ -34,7 +34,7 @@ class CloudScraper(cloudscraper.CloudScraper):
 
     async def close(self) -> None:
         if not self._session.closed:
-            print(self._event.is_set())
+            print(f"event is set: {self._event.is_set()}")
             print("waiting for event")
             await self._event.wait()
             print("closing")
