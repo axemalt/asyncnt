@@ -150,6 +150,6 @@ async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: Clo
             scraper
         )
 
-    data = json.loads(raw_data.content)
+    data = json.loads(await raw_data.content())
 
     return Team(data["data"])
