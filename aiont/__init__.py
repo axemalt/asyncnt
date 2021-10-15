@@ -27,7 +27,7 @@ class CloudScraper(cloudscraper.CloudScraper):
     async def get(self, url: str, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
         session = session or self._session
 
-        return await session.get(url, headers=self.headers), self.event
+        return await session.get(url, headers=self.headers)
 
     async def close(self) -> None:
         if not self._session.closed:
@@ -125,23 +125,24 @@ class Team:
         return await asyncio.gather(*coruntines)
 
 
-async def get_data(url: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> aiohttp.ClientResponse:
-    scraper = scraper or CloudScraper()
+async def get_data(url: str, scraper: CloudScraper, session: aiohttp.ClientSession = None) -> aiohttp.ClientResponse:
     return await scraper.get(
         url,
         session
     )
 
 
-async def get_racer(username: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> Racer:
-    raw_data, event = await get_data(
+async def get_racer(username: str, scraper: CloudScraper, session: aiohttp.ClientSession = None) -> Racer:
+    scraper = scraper or CloudScraper()
+
+    raw_data = await get_data(
         f"https://nitrotype.com/racer/{username}",
         session,
         scraper
     )
     text = await raw_data.text()
 
-    event.set()
+    scraper.event.set()
 
     regex_result: str = re.search(
         r"RACER_INFO: \{\"(.*)\}", text.strip()
@@ -152,14 +153,16 @@ async def get_racer(username: str, session: aiohttp.ClientSession = None, scrape
     return Racer(data)
 
 
-async def get_team(tag: str, session: aiohttp.ClientSession = None, scraper: CloudScraper = None) -> Team:
-    raw_data, event = await get_data(
+async def get_team(tag: str, scraper: CloudScraper, session: aiohttp.ClientSession = None) -> Team:
+    scraper = scraper or CloudScraper()
+
+    raw_data = await get_data(
         f"https://nitrotype.com/api/teams/{tag}",
-        session,
-        scraper
+        scraper,
+        session
     )
     data = await raw_data.json()
 
-    event.set()
+    scraper.event.set()
 
     return Team(data["data"])
