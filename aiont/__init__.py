@@ -142,6 +142,8 @@ class Racer:
             self.loot.append(Loot(loot))
 
     async def get_team(self) -> Team:
+        """Returns the team of the racer as a Team object."""
+
         return await self._scraper.get_team(self.team_tag)
 
 
@@ -152,8 +154,8 @@ class Team:
         info: Dict = data["info"]
         stats: Dict = data["stats"]
 
-        self.captain_username: str = info["username"]
-        self.leader_usernames: List[str] = [
+        self._captain_username: str = info["username"]
+        self._leader_usernames: List[str] = [
             member["username"]
             for member in data["members"]
             if member["role"] == "officer"
@@ -175,9 +177,13 @@ class Team:
             )
 
     async def get_captain(self) -> Racer:
+        """Returns the captain of the team as a Racer object."""
+
         return await self._scraper.get_racer(self.captain_username)
 
     async def get_leaders(self, *, include_captain=False) -> List[Racer]:
+        """Returns the leaders of the team as a list of Racer objects."""
+
         coruntines = []
 
         for username in self.leader_usernames:
@@ -233,6 +239,7 @@ class Session(cloudscraper.CloudScraper):
     async def get_racer(
         self, username: str, *, session: Optional[aiohttp.ClientSession] = None
     ) -> Racer:
+        """Returns a Racer object from the racer username."""
 
         raw_data: aiohttp.ClientResponse = await self._get(
             f"https://nitrotype.com/racer/{username}", session=session
@@ -250,6 +257,7 @@ class Session(cloudscraper.CloudScraper):
     async def get_team(
         self, tag: str, *, session: aiohttp.ClientSession = None
     ) -> Team:
+        """Returns a Team object from the team tag."""
 
         raw_data: aiohttp.ClientResponse = await self._get(
             f"https://nitrotype.com/api/teams/{tag}", session=session
