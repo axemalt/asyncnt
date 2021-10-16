@@ -81,7 +81,6 @@ class Car:
 
     def __init__(self, data):
         self.id = data[0]
-        self.owned = data[1] == "owned"
         self.hue_angle = data[2]
 
         if self.hue_angle == 0:

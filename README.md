@@ -29,19 +29,34 @@ async def main():
         #print team's daily speed
         print(team.daily_speed)
 ```
+Car Class
+=========
+Attributes:
+* `id`: The car's ID.
+* `hue_angle`: The car's hue angle.
+* `url`: The car's image url.
+
+Loot Class
+==========
+Attributes:
+* `id`: The loot's ID.
+* `type`: The loot's type.
+* `name`: The loot's name.
+* `rarity`: The loot's rarity.
+
 Session Class
 =============
 Methods:
-* `await get_racer(username: str, *, session: Optional[aiohttp.ClientSession] = None) -> Optional[Racer]`: Returns a Racer object from the racer username.
-* `await get_team(self, tag: str, *, session: aiohttp.ClientSession = None) -> Optional[Team]`: Returns a Team object from the team tag.
+* `await get_racer(username: str, *, session: Optional[aiohttp.ClientSession] = None) -> Optional[Racer]`: Get a racer with a username.
+* `await get_team(self, tag: str, *, session: aiohttp.ClientSession = None) -> Optional[Team]`: Get a team with a tag.
 
 Racer Class
 ===========
 Attribues:
-* `user_id`: The racer's user ID.
+* `id`: The racer's user ID.
 * `username`: The racer's username.
 * `display_name`: The racer's display name.
-* `membership`: The racer's membership (premium, basic).
+* `membership`: The racer's membership (gold, basic).
 * `level`: The racer's level.
 * `experience`: The racer's experience.
 * `profile_views`: The racer's profile views.
@@ -49,8 +64,8 @@ Attribues:
 * `nitros_used`: The racer's amount of used nitros.
 * `nitros_total`: The racer's amount of owned nitros and used nitros added together.
 * `races`: The racer's race amount.
-* `wpm_average`: The racer's average wpm.
-* `wpm_high`: The racer's highest wpm.
+* `average_speed`: The racer's average wpm.
+* `high_speed`: The racer's highest wpm.
 * `friend_reqs_allowed`: If the racer allows friend requests.
 * `looking for team`: If the racer accepts team invites.
 * `created`: The racer's account creation date (seconds since unix epoch).
@@ -62,11 +77,22 @@ Attribues:
 * `loot`: The racer's loot.
 
 Methods:
-* `await get_team() -> Optional[Team]`: The racer's team.
+* `await get_team() -> Optional[Team]`: Get the racer's team.
 
 Team Class
 ==========
 Attribues:
+* `id`: The team's ID.
+* `tag`: The team's tag.
+* `name`: The team's name.
+* `open`: If the team allows new members.
+* `created`: The team's creation date (seconds since unix epoch).
+* `profile_views`: The team's profile views.
+* `member_count`: The team's member count.
+* `min_level`: The team's minimum required level.
+* `min_races`: The team's minimum required races.
+* `min_speed`: The team's minimum required speed.
+* `description`: The team's description.
 * `daily_races`: The team's daily races.
 * `daily_speed`: The team's daily points.
 * `daily_accuracy`: The team's daily accuracy.
@@ -81,8 +107,9 @@ Attribues:
 * `alltime_points`: The team's all time points.
 
 Methods:
-* `await get_captain() -> Racer`: The team's captain.
-* `await get_leaders(*, include_captain: bool = False) -> List[Optional[Racer]]`: The team's leaders.
+* `await get_captain() -> Racer`: Get the captain of the team.
+* `await get_leaders(*, include_captain: bool = False) -> List[Optional[Racer]]`: Get the leaders of the team.
+* `await get_members(*, include_leaders: bool = False) -> List[Optional[Racer]]`: Get the members of the team.
 
 Lisence
 =======
