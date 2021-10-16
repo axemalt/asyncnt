@@ -26,7 +26,6 @@ setup(name='aiont',
     description='An asynchronous way to fetch team and racer statistics from nitrotype.',
     install_requires=['cloudscraper', 'aiohttp'],
     long_description=readme,
-    long_description_content_type="text/x-md",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
