@@ -101,56 +101,7 @@ class Loot:
 
 
 class Racer:
-    """
-    Represents a Nitro Type racer.
-
-    Attributes
-    ----------
-    id: :class:`int`
-        The racer's ID.
-    username: :class:`str`
-        The racer's username.
-    display_name: :class:`str`
-        The racer's display name.
-    membership: :class:`str`
-        The racer's membership (gold, basic).
-    level: :class:`int`
-        The racer's level.
-    experience: :class:`int`
-        The racer's experience.
-    profile_views: :class:`int`
-        The racer's amount of profile views.
-    nitros: :class:`int`
-        The racer's amount of owned nitros.
-    nitros_used: :class:`int`
-        The racer's amount of used nitros.
-    nitros_total: :class:`int`
-        The racer's amount of owned and used nitros added together
-    races: :class:`int`
-        The racer's amount of races.
-    team_tag: Optional[:class:`str`]
-        The racer's team tag. ``None`` if they do not have a team.
-    average_speed: :class:`int`
-        The racer's average speed.
-    high_speed: :class:`int`
-        The racer's highest speed.
-    friend_reqs_allowed: :class:`bool`
-        If the racer allows friend requests.
-    looking_for_team: :class:`bool`
-        If the racer allows team invites.
-    created: :class:`int`
-        The time the racer's account was created, in seconds since the unix epoch.
-    car: :class:`Car`
-        The racer's current car.
-    cars: List[:class:`Car`]
-    cars_owned: :class:`int`
-        The racer's amount of owned cars.
-    cars_sold: :class:`int`
-        The racer's amount of sold cars.
-    cars_total: :class:`int`
-        The racer's amount of owned and sold cars added together.
-    loot: List[Optional[:class:`Loot`]]
-    """
+    """Represents a Nitro Type racer."""
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
@@ -199,21 +150,7 @@ class Racer:
             self.loot.append(Loot(loot))
 
     async def get_team(self) -> Optional[Team]:
-        """
-        |coro|
-
-        Get the racer's team.
-
-        Raises
-        ------
-        HTTPException
-            Getting the team failed.
-
-        Returns
-        -------
-        Optional[:class:`Team`]
-            The racer's team. ``None`` if they do not have a team.
-        """
+        """Get the racer's team."""
 
         if not self.team_tag:
             return None
@@ -221,58 +158,7 @@ class Racer:
 
 
 class Team:
-    """
-    Represents a Nitro Type Team.
-    
-    Attributes
-    ----------
-    id: :class:`int`
-        The team's ID.
-    tag: :class:`str`
-        The team's tag.
-    name: :class`str`
-        The team's name.
-    open: :class:`bool`
-        If the team allows new members to join.
-    created: :class:`int`
-        The time the team was created, in seconds since the unix epoch.
-    profile_views: :class:`int`
-        The team's profile views..
-    member_count: :class:`int`
-        The team's amount of members.
-    min_level: :class:`int`
-        The team's minimum level requiredto join.
-    min_races: :class:`int`
-        The team's minimum races required to join.
-    min_speed: :class:`int`
-        The team's minimum speed required to join.
-    description: :class:`str`
-        The team's description.
-    daily_races: :class:`int`
-        The team's daily races.
-    daily_speed: :class:`int`
-        The team's daily speed.
-    daily_accuracy: :class:`int`
-        The team's daily accuracy.
-    daily_points: :class:`float`
-        The team's daily points.
-    season_races: :class:`int`
-        The team's season races.
-    season_speed: :class:`int`
-        The team's season speed.
-    season_accuracy: :class:`int`
-        The team's season accuracy.
-    season_points: :class:`float`
-        The team's season points.
-    alltime_races: :class:`int`
-        The team's all time races.
-    alltime_speed: :class:`int`
-        The team's all time speed.
-    alltime_accuracy: :class:`int`
-        The team's all time accuracy.
-    alltime_points: :class:`float`
-        The team's all time points.
-    """
+    """Represents a Nitro Type Team."""
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
@@ -319,21 +205,7 @@ class Team:
             )
 
     async def get_captain(self) -> Racer:
-        """
-        |coro|
-
-        Get the captain of the team.
-
-        Raises
-        ------
-        HTTPException
-            Getting the captain failed.
-
-        Returns
-        -------
-        :class:`Racer`
-            The captain of the team.
-        """
+        """Get the captain of the team."""
 
         return await self._scraper.get_racer(self._captain_username)
 
@@ -341,26 +213,7 @@ class Team:
         self, *, include_captain: bool = False
     ) -> List[Optional[Racer]]:
 
-        """
-        |coro|
-
-        Get the leaders of the team.
-
-        Parameters
-        ----------
-        include_captain: Optional[:class:`bool`]
-            Whether the list includes the captain. Defaults to ``False``.
-
-        Raises
-        ------
-        HTTPException
-            Getting the leaders failed.
-
-        Returns
-        -------
-        List[Optional[:class:`Racer`]]
-            The leaders of the team.
-        """
+        """Get the leaders of the team."""
 
         coruntines = []
 
@@ -376,26 +229,7 @@ class Team:
         self, *, include_leaders: bool = False
     ) -> List[Optional[Racer]]:
     
-        """
-        |coro|
-
-        Get the members of the team.
-
-        Parameters
-        ----------
-        include_leaders: Optional[:class:`bool`]
-            Whether the list includes the leaders. Defaults to ``False``.
-
-        Raises
-        ------
-        HTTPException
-            Getting the members failed.
-
-        Returns
-        -------
-        List[Optional[:class:`Racer`]]
-            The members of the team.
-        """
+        """Get the members of the team."""
 
         coruntines = []
 
@@ -409,9 +243,7 @@ class Team:
 
 
 class Session(cloudscraper.CloudScraper):
-    """
-    First-class interface for making HTTP requests to Nitro Type.
-    """
+    """First-class interface for making HTTP requests to Nitro Type."""
 
     __slots__ = ["_session", "headers"]
 
@@ -453,19 +285,7 @@ class Session(cloudscraper.CloudScraper):
         self, username: str, *, session: Optional[aiohttp.ClientSession] = None
     ) -> Optional[Racer]:
 
-        """
-        Get a racer with a username.
-
-        Raises
-        ------
-        HTTPException
-            Getting the racer failed.
-
-        Returns
-        -------
-        Optional[:class:`Racer`]
-            The racer with the same username.
-        """
+        """Get a racer with a username."""
 
         raw_data: aiohttp.ClientResponse = await self._get(
             f"https://nitrotype.com/racer/{username}/", session=session
@@ -484,19 +304,7 @@ class Session(cloudscraper.CloudScraper):
         self, tag: str, *, session: aiohttp.ClientSession = None
     ) -> Optional[Team]:
 
-        """
-        Get a team with a tag.
-
-        Raises
-        ------
-        HTTPException
-            Getting the team failed.
-
-        Returns
-        -------
-        Optional[:class:`Team`]
-            The team with the same tag.
-        """
+        """Get a team with a tag."""
 
         raw_data: aiohttp.ClientResponse = await self._get(
             f"https://nitrotype.com/api/teams/{tag}/", session=session
