@@ -41,22 +41,30 @@ import re
 
 
 class AioNTException(Exception):
+    """Base exception class for aiont."""
+
     pass
 
 
 class InvalidRacerUsername(AioNTException):
+    """Exception that is raised when the racer username provided is invalid."""
+
     def __init__(self) -> None:
         message = "The username provided is invalid."
         super().__init__(message)
 
 
 class InvalidTeamTag(AioNTException):
+    """Exception that is raised when the team tag provided is invalid."""
+    
     def __init__(self) -> None:
         message = "The tag provided is invalid."
         super().__init__(message)
 
 
 class HTTPException(AioNTException):
+    """Exception that is raised when an HTTP request operation fails."""
+
     def __init__(self, response: aiohttp.ClientResponse):
         self.response = response
         self.status: int = response.status
@@ -69,14 +77,20 @@ class HTTPException(AioNTException):
 
 
 class Forbidden(HTTPException):
+    """Exception that is raised for when status code 403 occurs."""
+
     pass
 
 
 class NotFound(HTTPException):
+    """Exception that is raised for when status code 404 occurs."""
+
     pass
 
 
 class Car:
+    """Represents a Nitro Type car."""
+
     def __init__(self, data):
         self.id = data[0]
         self.owned = data[1] == "owned"
@@ -89,6 +103,8 @@ class Car:
 
 
 class Loot:
+    """Represents a Nitro Type loot."""
+
     def __init__(self, data):
         self.id = data["lootID"]
         self.type = data["type"]
@@ -97,6 +113,8 @@ class Loot:
 
 
 class Racer:
+    """Represents a Nitro Type racer."""
+
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
 
@@ -148,6 +166,8 @@ class Racer:
 
 
 class Team:
+    """Represents a Nitro Type Team"""
+
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
 
@@ -196,6 +216,8 @@ class Team:
 
 
 class Session(cloudscraper.CloudScraper):
+    """First-class interface for making HTTP requests to Nitro Type."""
+
     __slots__ = ["_session", "headers"]
 
     def __init__(self, *, session: Optional[aiohttp.ClientSession] = None) -> None:
