@@ -9,7 +9,7 @@ if not version:
     raise RuntimeError('version is not set')
 
 readme = ''
-with open('README.md') as f:
+with open('README.rst') as f:
     readme = f.read()
 
 packages = [
@@ -26,7 +26,7 @@ setup(name='aiont',
       description='Async Implementation of NT.py',
       install_requires=['cloudscraper', 'aiohttp'],
       long_description=readme,
-      long_description_content_type="text/x-md",
+      long_description_content_type="text/x-rst",
       include_package_data=True,
       python_requires='>=3.8.0',
 )
