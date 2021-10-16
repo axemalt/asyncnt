@@ -54,25 +54,30 @@ class Racer:
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
 
-        self.team_tag: str = data.get("tag")
         self.user_id: int = data["userID"]
         self.username: str = data["username"].title()
         self.name: str = data["displayName"] or self.username
+
         self.membership: str = data["membership"]
         self.level: int = data["level"]
         self.experience: int = data["experience"]
         self.views: int = data["profileViews"]
-        self.current_car_id: int = data["carID"]
+
         self.nitros: int = data["nitros"]
         self.nitros_used: int = data["nitrosUsed"]
         self.nitros_total: int = self.nitros + self.nitros_used
+
         self.races: int = data["racesPlayed"]
+
         self.wpm_average: int = data["avgSpeed"]
         self.wpm_high: int = data["highestSpeed"]
+
         self.friend_reqs_allowed: bool = bool(data["allowFriendRequests"])
         self.looking_for_team: bool = bool(data["lookingForTeam"])
+
         self.created: int = data["createdStamp"]
 
+        self.current_car_id: int = data["carID"]
         if data["carHueAngle"] == 0:
             self.car_img_url = (
                 f'https://www.nitrotype.com/cars/{data["carID"]}_large_1.png'
@@ -91,6 +96,16 @@ class Racer:
             elif car[1] == "sold":
                 self.cars_sold += 1
             self.cars_total += 1
+
+        loot_data = data["loot"]
+        if not len(loot_data):
+            self.trail = None
+        else:
+            for loot in loot_data:
+                loot_type = loot_data["type"]
+                setattr(self, f"{loot_type}", loot["name"])
+                setattr(self, f"{loot_type}_id", loot["lootID"])
+                setattr(self, f"{loot_type}_rarity", loot["options"]["rarity"])
 
     async def get_team(self) -> Team:
         return await self._scraper.get_team(self.team_tag)
