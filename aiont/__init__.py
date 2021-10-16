@@ -263,7 +263,7 @@ class Session(cloudscraper.CloudScraper):
 
     async def get_racer(
         self, username: str, *, session: Optional[aiohttp.ClientSession] = None
-    ) -> Racer:
+    ) -> Optional[Racer]:
         """Returns a Racer object from the racer username."""
 
         raw_data: aiohttp.ClientResponse = await self._get(
@@ -281,7 +281,7 @@ class Session(cloudscraper.CloudScraper):
 
     async def get_team(
         self, tag: str, *, session: aiohttp.ClientSession = None
-    ) -> Team:
+    ) -> Optional[Team]:
         """Returns a Team object from the team tag."""
 
         raw_data: aiohttp.ClientResponse = await self._get(
