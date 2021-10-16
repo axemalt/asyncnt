@@ -81,13 +81,13 @@ class Racer:
         self._scraper = scraper
 
         self.user_id: int = data["userID"]
-        self.username: str = data["username"].title()
+        self.username: str = data["username"]
         self.name: str = data["displayName"] or self.username
 
         self.membership: str = data["membership"]
         self.level: int = data["level"]
         self.experience: int = data["experience"]
-        self.views: int = data["profileViews"]
+        self.profile_views: int = data["profileViews"]
 
         self.nitros: int = data["nitros"]
         self.nitros_used: int = data["nitrosUsed"]
@@ -114,10 +114,10 @@ class Racer:
         self.cars_owned = 0
         self.cars_sold = 0
         self.cars_total = 0
-        self.carIDs = []
+        self.car_ids = []
         for car in data["cars"]:
             if car[1] == "owned":
-                self.carIDs.append(car[0])
+                self.car_ids.append(car[0])
                 self.cars_owned += 1
             elif car[1] == "sold":
                 self.cars_sold += 1
@@ -204,7 +204,7 @@ class Session(cloudscraper.CloudScraper):
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-    
+
         await self._session.close()
 
     async def _get(
