@@ -36,11 +36,10 @@ Basic Usage:
 Session Class
 =============
 
-Methods: \*
-``await get_racer(username: str, *, session: Optional[aiohttp.ClientSession] = None) -> Optional[Racer]``:
-Get a racer with a username. \*
-``await get_team(self, tag: str, *, session: aiohttp.ClientSession = None) -> Optional[Team]``:
-Get a team with a tag.
+Methods: 
+
+* ``await get_racer(username: str, *, session: Optional[aiohttp.ClientSession] = None) -> Optional[Racer]``: Get a racer with a username. 
+* ``await get_team(self, tag: str, *, session: aiohttp.ClientSession = None) -> Optional[Team]``: Get a team with a tag.
 
 Racer Class
 ===========
