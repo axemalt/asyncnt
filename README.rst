@@ -46,6 +46,7 @@ Racer Class
 ===========
 
 Attribues:
+
 * ``id``: The racer's user ID. 
 * ``username``: The racer's username. 
 * ``display_name``: The racer's display name. 
@@ -70,12 +71,14 @@ Attribues:
 * ``loot``: The racer's loot.
 
 Methods: 
+
 * ``await get_team() -> Optional[Team]``: Get the racer's team.
 
 Team Class
 ==========
 
 Attribues: 
+
 * ``id``: The team's ID. 
 * ``tag``: The team's tag. 
 * ``name``: The team's name. 
@@ -101,6 +104,7 @@ Attribues:
 * ``alltime_points``: The team's all time points.
 
 Methods: 
+
 * ``await get_captain() -> Racer``: Get the captain of the team. 
 * ``await get_leaders(*, include_captain: bool = False) -> List[Optional[Racer]]``: Get the leaders of the team. 
 * ``await get_members(*, include_leaders: bool = False) -> List[Optional[Racer]]``: Get the members of the team.
@@ -109,6 +113,7 @@ Car Class
 =========
 
 Attributes: 
+
 * ``id``: The car's ID. 
 * ``hue_angle``: The car's hue angle. 
 * ``url``: The car's image url.
@@ -117,6 +122,7 @@ Loot Class
 ==========
 
 Attributes: 
+
 * ``id``: The loot's ID. 
 * ``type``: The loot's type. 
 * ``name``: The loot's name. 
