@@ -131,7 +131,7 @@ class Racer:
         self.cars: List[Car] = []
         for car in data["cars"]:
             if car[1] == "owned":
-                self.car_ids.append(Car(car))
+                self.cars.append(Car(car))
                 self.cars_owned += 1
             elif car[1] == "sold":
                 self.cars_sold += 1
