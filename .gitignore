@@ -1,2 +1,5 @@
 .vscode
 venv
+__pycache__
+aiont.egg-info
+dist
