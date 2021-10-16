@@ -222,7 +222,7 @@ class Racer:
 
 class Team:
     """
-    Represents a Nitro Type Team
+    Represents a Nitro Type Team.
     
     Attributes
     ----------
