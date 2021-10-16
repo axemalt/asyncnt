@@ -137,7 +137,7 @@ class Racer:
                 self.cars_sold += 1
             self.cars_total += 1
 
-        self.loot = []
+        self.loot: List[Loot] = []
         for loot in data["loot"]:
             self.loot.append(Loot(loot))
 
