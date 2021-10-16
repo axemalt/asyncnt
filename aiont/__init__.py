@@ -31,7 +31,8 @@ __author__ = "axemalt"
 __version__ = "0.0.1"
 
 
-from typing import Optional, List, Dict
+from typing import Optional, Type, List, Dict
+from types import TracebackType
 import cloudscraper
 import asyncio
 import aiohttp
@@ -193,6 +194,18 @@ class Session(cloudscraper.CloudScraper):
         if not self._session.closed:
             loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
             loop.create_task(self._session.close())
+
+    async def __aenter__(self) -> Session:
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
+    
+        await self._session.close()
 
     async def _get(
         self, url: str, *, session: Optional[aiohttp.ClientSession] = None
