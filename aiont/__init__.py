@@ -56,7 +56,7 @@ class InvalidRacerUsername(AioNTException):
 
 class InvalidTeamTag(AioNTException):
     """Exception that is raised when the team tag provided is invalid."""
-    
+
     def __init__(self) -> None:
         message = "The tag provided is invalid."
         super().__init__(message)
@@ -221,7 +221,10 @@ class Team:
 
         return await self._scraper.get_racer(self._captain_username)
 
-    async def get_leaders(self, *, include_captain: bool = False) -> List[Optional[Racer]]:
+    async def get_leaders(
+        self, *, include_captain: bool = False
+    ) -> List[Optional[Racer]]:
+
         """Returns the leaders of the team as a list of Racer objects."""
 
         coruntines = []
@@ -234,7 +237,10 @@ class Team:
 
         return await asyncio.gather(*coruntines)
 
-    async def get_members(self, *, include_leaders: bool = False):
+    async def get_members(
+        self, *, include_leaders: bool = False
+    ) -> List[Optional[Racer]]:
+    
         """Returns the members of the team as a list of Racer objects."""
 
         coruntines = []
