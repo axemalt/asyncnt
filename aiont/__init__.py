@@ -120,7 +120,7 @@ class Racer:
 
         self.user_id: int = data["userID"]
         self.username: str = data["username"]
-        self.name: str = data["displayName"] or self.username
+        self.display_name: str = data["displayName"] or self.username
 
         self.membership: str = data["membership"]
         self.level: int = data["level"]
@@ -186,7 +186,6 @@ class Team:
             speed: float = int(stat["typed"]) / 5 / stat["secs"] * 60
             accuracy: float = 100 - int(stat["errs"] / int(stat["typed"])) * 100
 
-            setattr(self, f"{board}_pre", stat)
             setattr(self, f"{board}_races", stat["played"])
             setattr(self, f"{board}_speed", speed)
             setattr(self, f"{board}_accuracy", accuracy)
