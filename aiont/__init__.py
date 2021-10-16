@@ -76,6 +76,26 @@ class NotFound(HTTPException):
     pass
 
 
+class Car:
+    def __init__(self, data):
+        self.id = data[0]
+        self.owned = data[1] == "owned"
+        self.hue_angle = data[2]
+
+        if self.hue_angle == 0:
+            self.url = f"https://www.nitrotype.com/cars/{self.id}_large_1.png"
+        else:
+            self.url = f"https://www.nitrotype.com/cars/painted/{self.id}_large_1_{self.hue_angle}.png"
+
+
+class Loot:
+    def __init__(self, data):
+        self.id = data["lootID"]
+        self.type = data["type"]
+        self.name = data["name"]
+        self.rarity = data["options"]["rarity"]
+
+
 class Racer:
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
@@ -103,36 +123,23 @@ class Racer:
 
         self.created: int = data["createdStamp"]
 
-        self.current_car_id: int = data["carID"]
-        if data["carHueAngle"] == 0:
-            self.car_img_url = (
-                f'https://www.nitrotype.com/cars/{data["carID"]}_large_1.png'
-            )
-        else:
-            self.car_img_url = f'https://www.nitrotype.com/cars/painted/{data["carID"]}_large_1_{data["carHueAngle"]}.png'
+        self.car: Car = Car([data["carID"], "owned", data["carHueAngle"]])
 
         self.cars_owned = 0
         self.cars_sold = 0
         self.cars_total = 0
-        self.car_ids = []
+        self.cars: List[Car] = []
         for car in data["cars"]:
             if car[1] == "owned":
-                self.car_ids.append(car[0])
+                self.car_ids.append(Car(car))
                 self.cars_owned += 1
             elif car[1] == "sold":
                 self.cars_sold += 1
             self.cars_total += 1
 
-        if not len(data["loot"]):
-            self.has_loot = False
-        else:
-            self.has_loot = True
-
-            for loot in data["loot"]:
-                loot_type = loot["type"]
-                setattr(self, f"{loot_type}", loot["name"])
-                setattr(self, f"{loot_type}_id", loot["lootID"])
-                setattr(self, f"{loot_type}_rarity", loot["options"]["rarity"])
+        self.loot = []
+        for loot in data["loot"]:
+            self.loot.append(Loot(loot))
 
     async def get_team(self) -> Team:
         return await self._scraper.get_team(self.team_tag)
