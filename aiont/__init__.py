@@ -133,6 +133,8 @@ class Racer:
 
         self.races: int = data["racesPlayed"]
 
+        self.team_tag = data["tag"]
+
         self.wpm_average: int = data["avgSpeed"]
         self.wpm_high: int = data["highestSpeed"]
 
@@ -159,9 +161,11 @@ class Racer:
         for loot in data["loot"]:
             self.loot.append(Loot(loot))
 
-    async def get_team(self) -> Team:
+    async def get_team(self) -> Optional[Team]:
         """Returns the team of the racer as a Team object."""
 
+        if not self.team_tag:
+            return None
         return await self._scraper.get_team(self.team_tag)
 
 
@@ -200,7 +204,7 @@ class Team:
 
         return await self._scraper.get_racer(self.captain_username)
 
-    async def get_leaders(self, *, include_captain=False) -> List[Racer]:
+    async def get_leaders(self, *, include_captain=False) -> List[Optional[Racer]]:
         """Returns the leaders of the team as a list of Racer objects."""
 
         coruntines = []
