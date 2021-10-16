@@ -135,8 +135,8 @@ class Racer:
 
         self.team_tag = data["tag"]
 
-        self.wpm_average: int = data["avgSpeed"]
-        self.wpm_high: int = data["highestSpeed"]
+        self.average_speed: int = data["avgSpeed"]
+        self.high_speed: int = data["highestSpeed"]
 
         self.friend_reqs_allowed: bool = bool(data["allowFriendRequests"])
         self.looking_for_team: bool = bool(data["lookingForTeam"])
@@ -178,12 +178,29 @@ class Team:
         info: Dict = data["info"]
         stats: Dict = data["stats"]
 
+        self.id: int = info["teamID"]
+        self.tag: str = info["tag"]
+        self.name: str = info["name"]
+
+        self.open: bool = info["enrollment"] == "open"
+
+        self.created: int = info["createdStamp"]
+        self.profile_views: int = info["profileViews"]
+        self.member_count: int = info["members"]
+
+        self.min_level: int = info["minLevel"]
+        self.min_races: int = info["minRaces"]
+        self.min_speed: int = info["minSpeed"]
+
+        self.description: str = info["otherRequirements"]
+
         self._captain_username: str = info["username"]
-        self._leader_usernames: List[str] = [
-            member["username"]
-            for member in data["members"]
-            if member["role"] == "officer"
-        ]
+        self._leader_usernames: List[str] = []
+        self._member_usernames: List[str] = []
+        for member in data["members"]:
+            self._member_usernames.append(member["username"])
+            if member["role"] == "officer":
+                self._leader_usernames.append(member["username"])
 
         for stat in stats:
             board: str = stat["board"]
@@ -202,15 +219,28 @@ class Team:
     async def get_captain(self) -> Racer:
         """Returns the captain of the team as a Racer object."""
 
-        return await self._scraper.get_racer(self.captain_username)
+        return await self._scraper.get_racer(self._captain_username)
 
-    async def get_leaders(self, *, include_captain=False) -> List[Optional[Racer]]:
+    async def get_leaders(self, *, include_captain: bool = False) -> List[Optional[Racer]]:
         """Returns the leaders of the team as a list of Racer objects."""
 
         coruntines = []
 
-        for username in self.leader_usernames:
-            if username == self.captain_username and not include_captain:
+        for username in self._leader_usernames:
+            if username == self._captain_username and not include_captain:
+                pass
+            else:
+                coruntines.append(self._scraper.get_racer(username))
+
+        return await asyncio.gather(*coruntines)
+
+    async def get_members(self, *, include_leaders: bool = False):
+        """Returns the members of the team as a list of Racer objects."""
+
+        coruntines = []
+
+        for username in self._member_usernames:
+            if username in self._leader_usernames and not include_leaders:
                 pass
             else:
                 coruntines.append(self._scraper.get_racer(username))
@@ -267,7 +297,7 @@ class Session(cloudscraper.CloudScraper):
         """Returns a Racer object from the racer username."""
 
         raw_data: aiohttp.ClientResponse = await self._get(
-            f"https://nitrotype.com/racer/{username}", session=session
+            f"https://nitrotype.com/racer/{username}/", session=session
         )
         text: str = await raw_data.text()
 
@@ -285,7 +315,7 @@ class Session(cloudscraper.CloudScraper):
         """Returns a Team object from the team tag."""
 
         raw_data: aiohttp.ClientResponse = await self._get(
-            f"https://nitrotype.com/api/teams/{tag}", session=session
+            f"https://nitrotype.com/api/teams/{tag}/", session=session
         )
         data: Dict = await raw_data.json()
 
