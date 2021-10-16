@@ -2,7 +2,7 @@ AioNT
 =====
 
 An asynchronous way to fetch team and racer statistics from
-`nitrotype <https://nitrotype.com>`__.
+`nitrotype <https://nitrotype.com>`_.
 
 Installation
 ============
