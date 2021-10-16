@@ -6,7 +6,7 @@ An asynchronous way to fetch team and racer statistics from [nitrotype](https://
 Installation
 ============
 ```
-pip install aiont
+pip install -U aiont
 ```
 
 Basic Usage:
@@ -18,19 +18,19 @@ import aiont
 
 async def main():
     #create a session
-    session = aiont.Session()
+    async with aiont.Session() as session:
+        #get a Racer object
+        racer = await session.get_racer("travis")
+        #print races the racer has
+        print(racer.races)
 
-    #get a Racer object
-    racer = await session.get_racer("travis")
-
-    #print races the racer has
-    print(racer.races)
-
-    #get a Team object
-    team = await session.get_team("NT")
-
-    #print team's daily speed
-    print(team.daily_speed)
-
-
+        #get a Team object
+        team = await session.get_team("NT")
+        #print team's daily speed
+        print(team.daily_speed)
 ```
+Go to the [docs]() for more information.
+
+Lisence
+=======
+MIT
