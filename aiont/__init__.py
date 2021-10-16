@@ -97,12 +97,13 @@ class Racer:
                 self.cars_sold += 1
             self.cars_total += 1
 
-        loot_data = data["loot"]
-        if not len(loot_data):
-            self.trail = None
+        if not len(data["loot"]):
+            self.has_loot = False
         else:
-            for loot in loot_data:
-                loot_type = loot_data["type"]
+            self.has_loot = True
+            
+            for loot in data["loot"]:
+                loot_type = loot["type"]
                 setattr(self, f"{loot_type}", loot["name"])
                 setattr(self, f"{loot_type}_id", loot["lootID"])
                 setattr(self, f"{loot_type}_rarity", loot["options"]["rarity"])
