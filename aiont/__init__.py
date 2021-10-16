@@ -284,15 +284,7 @@ class Session(cloudscraper.CloudScraper):
         self, username: str, *, session: Optional[aiohttp.ClientSession] = None
     ) -> Optional[Racer]:
 
-        """
-        Get a racer with a username.
-        
-        :param username: The username of the racer.
-        :type username: str
-        :raise aiont.HTTPException: Getting the racer failed.
-        :return: The racer.
-        :rtype: aiont.Racer
-        """
+        """Get a racer with a username."""
 
         raw_data: aiohttp.ClientResponse = await self._get(
             f"https://nitrotype.com/racer/{username}/", session=session
