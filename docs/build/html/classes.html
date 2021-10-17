@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AioNT Classes &mdash; AioNT 0.0.1 documentation</title>
+  <title>Session Class &mdash; AioNT 0.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,7 +17,9 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Exceptions" href="exceptions.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -35,13 +37,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="session.html">Session Class</a></li>
-<li class="toctree-l1"><a class="reference internal" href="racer.html">Racer Class</a></li>
-<li class="toctree-l1"><a class="reference internal" href="team.html">Team Class</a></li>
-<li class="toctree-l1"><a class="reference internal" href="car.html">Car Class</a></li>
-<li class="toctree-l1"><a class="reference internal" href="loot.html">Loot Class</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Session Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#racer-class">Racer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#team-class">Team Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#car-class">Car Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#loot-class">Loot Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 </ul>
 
         </div>
@@ -58,7 +61,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>AioNT Classes</li>
+      <li>Session Class</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/classes.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -68,17 +71,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="aiont-classes">
-<h1>AioNT Classes<a class="headerlink" href="#aiont-classes" title="Permalink to this headline"></a></h1>
+  <p>Classes</p>
 <section id="session-class">
-<h2>Session Class<a class="headerlink" href="#session-class" title="Permalink to this headline"></a></h2>
+<h1>Session Class<a class="headerlink" href="#session-class" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="aiont.Session">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aiont.</span></span><span class="sig-name descname"><span class="pre">Session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client.ClientSession</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiont.Session" title="Permalink to this definition"></a></dt>
 <dd><p>First-class interface for making HTTP requests to Nitro Type.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="aiont.Session.get_racer">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_racer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client.ClientSession</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="racer.html#aiont.Racer" title="aiont.Racer"><span class="pre">aiont.Racer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Session.get_racer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_racer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client.ClientSession</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#aiont.Racer" title="aiont.Racer"><span class="pre">aiont.Racer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Session.get_racer" title="Permalink to this definition"></a></dt>
 <dd><p>Get a racer with a username.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -88,17 +90,17 @@
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>aiont.HTTPException</strong> – Getting the racer failed.</p>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#aiont.HTTPException" title="aiont.HTTPException"><strong>aiont.HTTPException</strong></a> – Getting the racer failed.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Optional[<a class="reference internal" href="racer.html#aiont.Racer" title="aiont.Racer">aiont.Racer</a>]</p>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#aiont.Racer" title="aiont.Racer">aiont.Racer</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="aiont.Session.get_team">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client.ClientSession</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="team.html#aiont.Team" title="aiont.Team"><span class="pre">aiont.Team</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Session.get_team" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client.ClientSession</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#aiont.Team" title="aiont.Team"><span class="pre">aiont.Team</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Session.get_team" title="Permalink to this definition"></a></dt>
 <dd><p>Get a team with a tag.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -108,10 +110,10 @@
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>aiont.HTTPException</strong> – Getting the team failed.</p>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#aiont.HTTPException" title="aiont.HTTPException"><strong>aiont.HTTPException</strong></a> – Getting the team failed.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Optional[<a class="reference internal" href="team.html#aiont.Team" title="aiont.Team">aiont.Team</a>]</p>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#aiont.Team" title="aiont.Team">aiont.Team</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -120,10 +122,10 @@
 
 </section>
 <section id="racer-class">
-<h2>Racer Class<a class="headerlink" href="#racer-class" title="Permalink to this headline"></a></h2>
+<h1>Racer Class<a class="headerlink" href="#racer-class" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="aiont.Racer">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aiont.</span></span><span class="sig-name descname"><span class="pre">Racer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scraper</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="session.html#aiont.Session" title="aiont.Session"><span class="pre">aiont.Session</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiont.Racer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aiont.</span></span><span class="sig-name descname"><span class="pre">Racer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scraper</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#aiont.Session" title="aiont.Session"><span class="pre">aiont.Session</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiont.Racer" title="Permalink to this definition"></a></dt>
 <dd><p>Represents a Nitro Type racer.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="aiont.Racer.id">
@@ -259,23 +261,23 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="aiont.Racer.loot">
-<span class="sig-name descname"><span class="pre">loot</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="loot.html#aiont.Loot" title="aiont.Loot"><span class="pre">aiont.Loot</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#aiont.Racer.loot" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">loot</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#aiont.Loot" title="aiont.Loot"><span class="pre">aiont.Loot</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#aiont.Racer.loot" title="Permalink to this definition"></a></dt>
 <dd><p>The racer’s loot.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="aiont.Racer.Racer.get_team">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="team.html#aiont.Team" title="aiont.Team"><span class="pre">aiont.Team</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Racer.Racer.get_team" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#aiont.Team" title="aiont.Team"><span class="pre">aiont.Team</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Racer.Racer.get_team" title="Permalink to this definition"></a></dt>
 <dd><p>Return the team the racer is on.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>aiont.HTTPException</strong> – Getting the team failed.</p>
+<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#aiont.HTTPException" title="aiont.HTTPException"><strong>aiont.HTTPException</strong></a> – Getting the team failed.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The racer’s team. <code class="docutils literal notranslate"><span class="pre">None</span></code> if the racer has no team.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Optional[<a class="reference internal" href="team.html#aiont.Team" title="aiont.Team">aiont.Team</a>]</p>
+<dd class="field-odd"><p>Optional[<a class="reference internal" href="#aiont.Team" title="aiont.Team">aiont.Team</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -284,10 +286,10 @@
 
 </section>
 <section id="team-class">
-<h2>Team Class<a class="headerlink" href="#team-class" title="Permalink to this headline"></a></h2>
+<h1>Team Class<a class="headerlink" href="#team-class" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="aiont.Team">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aiont.</span></span><span class="sig-name descname"><span class="pre">Team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scraper</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="session.html#aiont.Session" title="aiont.Session"><span class="pre">aiont.Session</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiont.Team" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aiont.</span></span><span class="sig-name descname"><span class="pre">Team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scraper</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#aiont.Session" title="aiont.Session"><span class="pre">aiont.Session</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiont.Team" title="Permalink to this definition"></a></dt>
 <dd><p>Represents a Nitro Type Team.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="aiont.Team.id">
@@ -429,57 +431,57 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="aiont.Team.Team.get_captain">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_captain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="racer.html#aiont.Racer" title="aiont.Racer"><span class="pre">aiont.Racer</span></a></span></span><a class="headerlink" href="#aiont.Team.Team.get_captain" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_captain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#aiont.Racer" title="aiont.Racer"><span class="pre">aiont.Racer</span></a></span></span><a class="headerlink" href="#aiont.Team.Team.get_captain" title="Permalink to this definition"></a></dt>
 <dd><p>Return the captain of the team.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>aiont.HTTPException</strong> – Getting the captain failed.</p>
+<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#aiont.HTTPException" title="aiont.HTTPException"><strong>aiont.HTTPException</strong></a> – Getting the captain failed.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The team’s captain.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="racer.html#aiont.Racer" title="aiont.Racer">aiont.Racer</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#aiont.Racer" title="aiont.Racer">aiont.Racer</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="aiont.Team.Team.get_leaders">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_leaders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_captain</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="racer.html#aiont.Racer" title="aiont.Racer"><span class="pre">aiont.Racer</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Team.Team.get_leaders" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_leaders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_captain</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#aiont.Racer" title="aiont.Racer"><span class="pre">aiont.Racer</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Team.Team.get_leaders" title="Permalink to this definition"></a></dt>
 <dd><p>Get the leaders of the team.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>include_captain</strong> (<em>bool</em>) – If the captain should be included. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>aiont.HTTPException</strong> – Getting the leaders failed.</p>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#aiont.HTTPException" title="aiont.HTTPException"><strong>aiont.HTTPException</strong></a> – Getting the leaders failed.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The team’s leaders.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List[Optional[<a class="reference internal" href="racer.html#aiont.Racer" title="aiont.Racer">aiont.Racer</a>]]</p>
+<dd class="field-even"><p>List[Optional[<a class="reference internal" href="#aiont.Racer" title="aiont.Racer">aiont.Racer</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="aiont.Team.Team.get_members">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_leaders</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="racer.html#aiont.Racer" title="aiont.Racer"><span class="pre">aiont.Racer</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Team.Team.get_members" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_leaders</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#aiont.Racer" title="aiont.Racer"><span class="pre">aiont.Racer</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#aiont.Team.Team.get_members" title="Permalink to this definition"></a></dt>
 <dd><p>Get the members of the team.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>include_leaders</strong> (<em>bool</em>) – If the captain should be included. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>aiont.HTTPException</strong> – Getting the members failed.</p>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#aiont.HTTPException" title="aiont.HTTPException"><strong>aiont.HTTPException</strong></a> – Getting the members failed.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The team’s members.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List[Optional[<a class="reference internal" href="racer.html#aiont.Racer" title="aiont.Racer">aiont.Racer</a>]]</p>
+<dd class="field-even"><p>List[Optional[<a class="reference internal" href="#aiont.Racer" title="aiont.Racer">aiont.Racer</a>]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -488,7 +490,7 @@
 
 </section>
 <section id="car-class">
-<h2>Car Class<a class="headerlink" href="#car-class" title="Permalink to this headline"></a></h2>
+<h1>Car Class<a class="headerlink" href="#car-class" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="aiont.Car">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aiont.</span></span><span class="sig-name descname"><span class="pre">Car</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiont.Car" title="Permalink to this definition"></a></dt>
@@ -515,7 +517,7 @@
 
 </section>
 <section id="loot-class">
-<h2>Loot Class<a class="headerlink" href="#loot-class" title="Permalink to this headline"></a></h2>
+<h1>Loot Class<a class="headerlink" href="#loot-class" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="aiont.Loot">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">aiont.</span></span><span class="sig-name descname"><span class="pre">Loot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#aiont.Loot" title="Permalink to this definition"></a></dt>
@@ -547,12 +549,14 @@
 </dd></dl>
 
 </section>
-</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="exceptions.html" class="btn btn-neutral float-right" title="Exceptions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

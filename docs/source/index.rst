@@ -11,9 +11,5 @@ Welcome to AioNT's documentation!
 .. toctree::
    
    usage
-   session
-   racer
-   team
-   car
-   loot
+   classes
    exceptions
