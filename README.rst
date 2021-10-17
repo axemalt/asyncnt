@@ -33,7 +33,7 @@ Basic Usage:
             #print team's daily speed
             print(team.daily_speed)
 
-Check out the `docs <https://aiont.rtfd.io>`_.
+Check out the `docs <https://aiont.readthedocs.io/en/latest/index.html#>`_ for more information.
 
 Lisence
 =======
