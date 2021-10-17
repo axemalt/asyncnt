@@ -367,6 +367,7 @@ class Session(cloudscraper.CloudScraper):
         self.per: float = 1
         self.rate: int = 10
         self._event = asyncio.Event()
+        self._event.set()
         self._window: float = 0.0
         self._tokens: int = self.rate
         self._session = aiohttp.ClientSession()
