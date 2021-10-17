@@ -336,10 +336,10 @@ class Session(cloudscraper.CloudScraper):
 
     __slots__ = ["_session", "headers"]
 
-    def __init__(self, *, session: Optional[aiohttp.ClientSession] = None) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
-        self._session = session or aiohttp.ClientSession()
+        self._session = aiohttp.ClientSession()
 
     def __del__(self) -> None:
         if not self._session.closed:
