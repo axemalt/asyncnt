@@ -16,3 +16,4 @@ Welcome to AioNT's documentation!
    team
    car
    loot
+   exceptions
