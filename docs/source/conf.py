@@ -19,7 +19,7 @@ sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 
 # -- Project information -----------------------------------------------------
 
-project = 'AioNT'
+project = 'AsyncNT'
 copyright = '2021, axemalt'
 author = 'axemalt'
 

@@ -1,5 +1,5 @@
 Exceptions
 ==========
 
-.. autoclass:: aiont.HTTPException
+.. autoclass:: asyncnt.HTTPException
     :members:

@@ -1,7 +1,7 @@
-Welcome to AioNT's documentation!
+Welcome to AsyncNT's documentation!
 ===================================
 
-**AioNT** is an asynchronous way to fetch team and racer statistics from
+**AsyncNT** is an asynchronous way to fetch team and racer statistics from
 `nitrotype <https://nitrotype.com>`_.
 
 .. note::

@@ -4,17 +4,17 @@ Usage
 Installation
 ------------
 
-To use AioNT, first install it using pip:
+To use AsyncNT, first install it using pip:
 
 .. code-block:: console
 
-   $ pip install aiont
+   $ pip install asyncnt
 
 Getting Data
 ------------
 
-To retrieve data, you first need to create a :py:class:`aiont.Session` object.
-Then, you can use :py:func:`aiont.Session.get_racer` and :py:func:`aiont.Session.get_team` to get a :py:class:`aiont.Racer` object and a :py:class:`aiont.Team` object, respectively.
+To retrieve data, you first need to create a :py:class:`asyncnt.Session` object.
+Then, you can use :py:func:`asyncnt.Session.get_racer` and :py:func:`asyncnt.Session.get_team` to get a :py:class:`asyncnt.Racer` object and a :py:class:`asyncnt.Team` object, respectively.
 
 Example
 -------
@@ -22,12 +22,12 @@ Example
 .. code:: python
 
     import asyncio
-    import aiont
+    import asyncnt
 
 
     async def main():
         #create a session
-        async with aiont.Session() as session:
+        async with asyncnt.Session() as session:
             #get a Racer object
             racer = await session.get_racer("travis")
             #print races the racer has

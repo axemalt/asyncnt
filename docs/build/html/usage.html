@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Usage &mdash; AioNT 0.0.1 documentation</title>
+  <title>Usage &mdash; AsyncNT 0.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Classes" href="classes.html" />
-    <link rel="prev" title="Welcome to AioNT’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Welcome to AsyncNT’s documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -27,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> AioNT
+            <a href="index.html" class="icon icon-home"> AsyncNT
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,7 +54,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">AioNT</a>
+          <a href="index.html">AsyncNT</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -76,25 +76,25 @@
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h1>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
-<p>To use AioNT, first install it using pip:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install aiont
+<p>To use AsyncNT, first install it using pip:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install asyncnt
 </pre></div>
 </div>
 </section>
 <section id="getting-data">
 <h2>Getting Data<a class="headerlink" href="#getting-data" title="Permalink to this headline"></a></h2>
-<p>To retrieve data, you first need to create a <a class="reference internal" href="classes.html#aiont.Session" title="aiont.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">aiont.Session</span></code></a> object.
-Then, you can use <a class="reference internal" href="classes.html#aiont.Session.get_racer" title="aiont.Session.get_racer"><code class="xref py py-func docutils literal notranslate"><span class="pre">aiont.Session.get_racer()</span></code></a> and <a class="reference internal" href="classes.html#aiont.Session.get_team" title="aiont.Session.get_team"><code class="xref py py-func docutils literal notranslate"><span class="pre">aiont.Session.get_team()</span></code></a> to get a <a class="reference internal" href="classes.html#aiont.Racer" title="aiont.Racer"><code class="xref py py-class docutils literal notranslate"><span class="pre">aiont.Racer</span></code></a> object and a <a class="reference internal" href="classes.html#aiont.Team" title="aiont.Team"><code class="xref py py-class docutils literal notranslate"><span class="pre">aiont.Team</span></code></a> object, respectively.</p>
+<p>To retrieve data, you first need to create a <a class="reference internal" href="classes.html#asyncnt.Session" title="asyncnt.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncnt.Session</span></code></a> object.
+Then, you can use <a class="reference internal" href="classes.html#asyncnt.Session.get_racer" title="asyncnt.Session.get_racer"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncnt.Session.get_racer()</span></code></a> and <a class="reference internal" href="classes.html#asyncnt.Session.get_team" title="asyncnt.Session.get_team"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncnt.Session.get_team()</span></code></a> to get a <a class="reference internal" href="classes.html#asyncnt.Racer" title="asyncnt.Racer"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncnt.Racer</span></code></a> object and a <a class="reference internal" href="classes.html#asyncnt.Team" title="asyncnt.Team"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncnt.Team</span></code></a> object, respectively.</p>
 </section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">aiont</span>
+<span class="kn">import</span> <span class="nn">asyncnt</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="c1">#create a session</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">aiont</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">asyncnt</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
         <span class="c1">#get a Racer object</span>
         <span class="n">racer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">get_racer</span><span class="p">(</span><span class="s2">&quot;travis&quot;</span><span class="p">)</span>
         <span class="c1">#print races the racer has</span>
@@ -113,7 +113,7 @@ Then, you can use <a class="reference internal" href="classes.html#aiont.Session
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to AioNT’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to AsyncNT’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="classes.html" class="btn btn-neutral float-right" title="Classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

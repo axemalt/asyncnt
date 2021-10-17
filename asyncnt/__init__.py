@@ -26,7 +26,7 @@ SOFTWARE.
 from __future__ import annotations
 
 
-__title__ = "aiont"
+__title__ = "asyncnt"
 __author__ = "axemalt"
 __version__ = "1.0.0"
 
@@ -40,13 +40,13 @@ import json
 import re
 
 
-class AioNTException(Exception):
-    """Base exception class for aiont."""
+class AsyncNTException(Exception):
+    """Base exception class for asyncnt."""
 
     pass
 
 
-class InvalidRacerUsername(AioNTException):
+class InvalidRacerUsername(AsyncNTException):
     """Exception that is raised when the racer username provided is invalid."""
 
     def __init__(self) -> None:
@@ -54,7 +54,7 @@ class InvalidRacerUsername(AioNTException):
         super().__init__(message)
 
 
-class InvalidTeamTag(AioNTException):
+class InvalidTeamTag(AsyncNTException):
     """Exception that is raised when the team tag provided is invalid."""
 
     def __init__(self) -> None:
@@ -62,7 +62,7 @@ class InvalidTeamTag(AioNTException):
         super().__init__(message)
 
 
-class HTTPException(AioNTException):
+class HTTPException(AsyncNTException):
     """Exception that is raised when an HTTP request operation fails."""
 
     def __init__(self, response: aiohttp.ClientResponse):
@@ -183,9 +183,9 @@ class Racer:
         """
         Return the team the racer is on.
         
-        :raise aiont.HTTPException: Getting the team failed.
+        :raise asyncnt.HTTPException: Getting the team failed.
         :return: The racer's team. ``None`` if the racer has no team.
-        :rtype: Optional[aiont.Team]
+        :rtype: Optional[asyncnt.Team]
         """
 
         if not self.team_tag:
@@ -275,9 +275,9 @@ class Team:
         """
         Return the captain of the team.
         
-        :raise aiont.HTTPException: Getting the captain failed.
+        :raise asyncnt.HTTPException: Getting the captain failed.
         :return: The team's captain.
-        :rtype: aiont.Racer
+        :rtype: asyncnt.Racer
         """
 
         return await self._scraper.get_racer(self._captain_username)
@@ -291,9 +291,9 @@ class Team:
         
         :param include_captain: If the captain should be included. Defaults to ``False``.
         :type include_captain: bool
-        :raise aiont.HTTPException: Getting the leaders failed.
+        :raise asyncnt.HTTPException: Getting the leaders failed.
         :return: The team's leaders.
-        :rtype: List[Optional[aiont.Racer]]
+        :rtype: List[Optional[asyncnt.Racer]]
         """
 
         coruntines = []
@@ -315,9 +315,9 @@ class Team:
         
         :param include_leaders: If the captain should be included. Defaults to ``False``.
         :type include_leaders: bool
-        :raise aiont.HTTPException: Getting the members failed.
+        :raise asyncnt.HTTPException: Getting the members failed.
         :return: The team's members.
-        :rtype: List[Optional[aiont.Racer]]
+        :rtype: List[Optional[asyncnt.Racer]]
         """
 
         coruntines = []
@@ -381,8 +381,8 @@ class Session(cloudscraper.CloudScraper):
         :type username: str
         :param session: The aiohttp session to use.
         :type session: aiohttp.ClientSession or None
-        :raise aiont.HTTPException: Getting the racer failed.
-        :rtype: Optional[aiont.Racer]
+        :raise asyncnt.HTTPException: Getting the racer failed.
+        :rtype: Optional[asyncnt.Racer]
         """
 
         raw_data: aiohttp.ClientResponse = await self._get(
@@ -409,8 +409,8 @@ class Session(cloudscraper.CloudScraper):
         :type tag: str
         :param session: The aiohttp session to use.
         :type session: aiohttp.ClientSession or None
-        :raise aiont.HTTPException: Getting the team failed.
-        :rtype: Optional[aiont.Team]
+        :raise asyncnt.HTTPException: Getting the team failed.
+        :rtype: Optional[asyncnt.Team]
         """
 
         raw_data: aiohttp.ClientResponse = await self._get(

@@ -1,5 +1,5 @@
 .vscode
 venv
 __pycache__
-aiont.egg-info
+asyncnt.egg-info
 dist

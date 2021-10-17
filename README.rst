@@ -1,4 +1,4 @@
-AioNT
+AsyncNT
 =====
 
 An asynchronous way to fetch team and racer statistics from
@@ -9,7 +9,7 @@ Installation
 
 ::
 
-    pip install -U aiont
+    pip install asyncnt
 
 Basic Usage:
 ============
@@ -17,12 +17,12 @@ Basic Usage:
 .. code:: python
 
     import asyncio
-    import aiont
+    import asyncnt
 
 
     async def main():
         #create a session
-        async with aiont.Session() as session:
+        async with asyncnt.Session() as session:
             #get a Racer object
             racer = await session.get_racer("travis")
             #print races the racer has
@@ -33,7 +33,7 @@ Basic Usage:
             #print team's daily speed
             print(team.daily_speed)
 
-Check out the `docs <https://aiont.readthedocs.io/en/latest/index.html#>`_ for more information.
+Check out the `docs <https://asyncnt.readthedocs.io/en/latest/index.html#>`_ for more information.
 
 Lisence
 =======

@@ -4,13 +4,13 @@ Classes
 Session Class
 -------------
 
-.. autoclass:: aiont.Session
+.. autoclass:: asyncnt.Session
     :members:
 
 Racer Class
 -----------
 
-.. autoclass:: aiont.Racer
+.. autoclass:: asyncnt.Racer
 
     .. autoattribute:: id
 
@@ -58,12 +58,12 @@ Racer Class
     
     .. autoattribute:: loot
 
-    .. autofunction:: aiont.Racer.get_team
+    .. autofunction:: asyncnt.Racer.get_team
 
 Team Class
 ----------
 
-.. autoclass:: aiont.Team
+.. autoclass:: asyncnt.Team
 
     .. autoattribute:: id
 
@@ -111,20 +111,20 @@ Team Class
 
     .. autoattribute:: all_time_points
 
-    .. autofunction:: aiont.Team.get_captain
+    .. autofunction:: asyncnt.Team.get_captain
 
-    .. autofunction:: aiont.Team.get_leaders
+    .. autofunction:: asyncnt.Team.get_leaders
 
-    .. autofunction:: aiont.Team.get_members
+    .. autofunction:: asyncnt.Team.get_members
 
 Car Class
 ---------
 
-.. autoclass:: aiont.Car
+.. autoclass:: asyncnt.Car
     :members:
 
 Loot Class
 ----------
 
-.. autoclass:: aiont.Loot
+.. autoclass:: asyncnt.Loot
     :members:

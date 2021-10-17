@@ -2,7 +2,7 @@ from setuptools import setup
 import re
 
 version = ''
-with open('aiont/__init__.py') as f:
+with open('asyncnt/__init__.py') as f:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
 
 if not version:
@@ -13,15 +13,15 @@ with open('README.rst') as f:
     readme = f.read()
 
 packages = [
-    'aiont'
+    'asyncnt'
 ]
 
-setup(name='aiont',
+setup(name='asyncnt',
     author='axemalt',
-    url='https://github.com/axemalt/aiont',
+    url='https://github.com/axemalt/asyncnt',
     version=version,
     packages=packages,
-    package_data={'aiont': ['py.typed']},
+    package_data={'asyncnt': ['py.typed']},
     license='MIT',
     description='An asynchronous way to fetch team and racer statistics from nitrotype.',
     install_requires=['cloudscraper', 'aiohttp'],
