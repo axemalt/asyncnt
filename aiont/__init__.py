@@ -80,8 +80,12 @@ class Car:
     """Represents a Nitro Type car."""
 
     def __init__(self, data):
-        self.id = data[0]
-        self.hue_angle = data[2]
+        #: The car's id.
+        self.id: int = data[0]
+        #: The car's hue angle.
+        self.hue_angle: int = data[2]
+        #: The car's image url.
+        self.url: str = ""
 
         if self.hue_angle == 0:
             self.url = f"https://www.nitrotype.com/cars/{self.id}_large_1.png"
@@ -93,10 +97,14 @@ class Loot:
     """Represents a Nitro Type loot."""
 
     def __init__(self, data):
-        self.id = data["lootID"]
-        self.type = data["type"]
-        self.name = data["name"]
-        self.rarity = data["options"]["rarity"]
+        #: The loot's ID.
+        self.id: int = data["lootID"]
+        #: The loot's type.
+        self.type: str = data["type"]
+        #: The loot's name.
+        self.name: str = data["name"]
+        #: The loot's rarity.
+        self.rarity: str = data["options"]["rarity"]
 
 
 class Racer:
@@ -104,37 +112,59 @@ class Racer:
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
-
+        
+        #: The racer's user ID.
         self.id: int = data["userID"]
+        #: The racer's username.
         self.username: str = data["username"]
+        #: The racer's display name.
         self.display_name: str = data["displayName"] or self.username
 
+        #: The racer's membership (gold, basic).
         self.membership: str = data["membership"]
+        #: The racer's level.
         self.level: int = data["level"]
+        #: The racer's amount of experience.
         self.experience: int = data["experience"]
+        #: The racer's amount of profile views.
         self.profile_views: int = data["profileViews"]
 
+        #: The racer's amount of owned nitros.
         self.nitros: int = data["nitros"]
+        #: The racer's amount of used nitros.
         self.nitros_used: int = data["nitrosUsed"]
+        #: The racer's amount of owned and used nitros.
         self.nitros_total: int = self.nitros + self.nitros_used
-
+        
+        #: The racer's amount of races.
         self.races: int = data["racesPlayed"]
-
+        
+        #: The racer's team tag. ``None`` if the racer has no team.
         self.team_tag: Optional[str] = data["tag"]
-
+        
+        #: The racer's average speed.
         self.average_speed: int = data["avgSpeed"]
+        #: The racer's highest speed.
         self.high_speed: int = data["highestSpeed"]
-
+        
+        #: Whether the racer allows friend requests.
         self.friend_reqs_allowed: bool = bool(data["allowFriendRequests"])
+        #: Whether the racer allows team invites.
         self.looking_for_team: bool = bool(data["lookingForTeam"])
-
+        
+        #: The racer's creation time.
         self.created: int = data["createdStamp"]
-
+        
+        #: The racer's current car.
         self.car: Car = Car([data["carID"], "owned", data["carHueAngle"]])
-
-        self.cars_owned = 0
-        self.cars_sold = 0
-        self.cars_total = 0
+        
+        #: The racer's amount of owned cars.
+        self.cars_owned: int = 0
+        #: The racer's amount of sold cars.
+        self.cars_sold: int = 0
+        #: The racer's amount of owned and sold cars.
+        self.cars_total: int = 0
+        #: The racer's cars.
         self.cars: List[Car] = []
         for car in data["cars"]:
             if car[1] == "owned":
@@ -144,12 +174,19 @@ class Racer:
                 self.cars_sold += 1
             self.cars_total += 1
 
+        #: The racer's loot.
         self.loot: List[Optional[Loot]] = []
         for loot in data["loot"]:
             self.loot.append(Loot(loot))
 
     async def get_team(self) -> Optional[Team]:
-        """Get the racer's team."""
+        """
+        Return the team the racer is on.
+        
+        :raise aiont.HTTPException: Getting the team failed.
+        :return: The racer's team. ``None`` if the racer has no team.
+        :rtype: Optional[aiont.Team]
+        """
 
         if not self.team_tag:
             return None
@@ -165,20 +202,31 @@ class Team:
         info: Dict = data["info"]
         stats: Dict = data["stats"]
 
+        #: The team's ID.
         self.id: int = info["teamID"]
+        #: The team's tag.
         self.tag: str = info["tag"]
+        #: The team's name.
         self.name: str = info["name"]
 
+        #: Whether the team allows new members.
         self.open: bool = info["enrollment"] == "open"
-
+        
+        #: The team's creation time.
         self.created: int = info["createdStamp"]
+        #: The team's amount of profile views.
         self.profile_views: int = info["profileViews"]
+        #: The team's amount of members.
         self.member_count: int = info["members"]
 
+        #: The team's minimum level required to join.
         self.min_level: int = info["minLevel"]
+        #: The team's minimum amount of races required to join.
         self.min_races: int = info["minRaces"]
+        #: The team's minimum speed required to join.
         self.min_speed: int = info["minSpeed"]
 
+        #: The team's description.
         self.description: str = info["otherRequirements"]
 
         self._captain_username: str = info["username"]
@@ -191,20 +239,46 @@ class Team:
 
         for stat in stats:
             board: str = stat["board"]
+            races: int = stat["played"]
             speed: float = int(stat["typed"]) / 5 / stat["secs"] * 60
             accuracy: float = 100 - int(stat["errs"] / int(stat["typed"])) * 100
 
-            setattr(self, f"{board}_races", stat["played"])
-            setattr(self, f"{board}_speed", speed)
-            setattr(self, f"{board}_accuracy", accuracy)
-            setattr(
-                self,
-                f"{board}_points",
-                (stat["played"] * (100 + speed / 2) * accuracy / 100),
-            )
+            if board == "daily":
+                #: The team's daily races.
+                self.daily_races: int = races
+                #: The team's daily speed.
+                self.daily_speed: int = speed
+                #: The team's daily accuracy.
+                self.daily_accuracy: float = accuracy
+                #: The team's daily points.
+                self.daily_points: float = races * (100 + speed / 2) * accuracy / 100
+            elif board == "season":
+                #: The team's season races.
+                self.season_races: int = races
+                #: The team's season speed.
+                self.season_speed: int = speed
+                #: The team's season accuracy.
+                self.season_accuracy: float = accuracy
+                #: The team's season points.
+                self.season_points: float = races * (100 + speed / 2) * accuracy / 100
+            else:
+                #: The team's all time races.
+                self.all_time_races: int = races
+                #: The team's all time speed.
+                self.all_time_speed: int = speed
+                #:  The team's all time accuracy.
+                self.all_time_accuracy: float = accuracy
+                #: The team's all time points.
+                self.all_time_points: float = races * (100 + speed / 2) * accuracy / 100
 
     async def get_captain(self) -> Racer:
-        """Get the captain of the team."""
+        """
+        Return the captain of the team.
+        
+        :raise aiont.HTTPException: Getting the captain failed.
+        :return: The team's captain.
+        :rtype: aiont.Racer
+        """
 
         return await self._scraper.get_racer(self._captain_username)
 
@@ -212,7 +286,15 @@ class Team:
         self, *, include_captain: bool = False
     ) -> List[Optional[Racer]]:
 
-        """Get the leaders of the team."""
+        """
+        Get the leaders of the team.
+        
+        :param include_captain: If the captain should be included. Defaults to ``False``.
+        :type include_captain: bool
+        :raise aiont.HTTPException: Getting the leaders failed.
+        :return: The team's leaders.
+        :rtype: List[Optional[aiont.Racer]]
+        """
 
         coruntines = []
 
@@ -228,7 +310,15 @@ class Team:
         self, *, include_leaders: bool = False
     ) -> List[Optional[Racer]]:
     
-        """Get the members of the team."""
+        """
+        Get the members of the team.
+        
+        :param include_leaders: If the captain should be included. Defaults to ``False``.
+        :type include_leaders: bool
+        :raise aiont.HTTPException: Getting the members failed.
+        :return: The team's members.
+        :rtype: List[Optional[aiont.Racer]]
+        """
 
         coruntines = []
 
@@ -284,7 +374,16 @@ class Session(cloudscraper.CloudScraper):
         self, username: str, *, session: Optional[aiohttp.ClientSession] = None
     ) -> Optional[Racer]:
 
-        """Get a racer with a username."""
+        """
+        Get a racer with a username.
+        
+        :param username: The racer's username.
+        :type username: str
+        :param session: The aiohttp session to use.
+        :type session: aiohttp.ClientSession or None
+        :raise aiont.HTTPException: Getting the racer failed.
+        :rtype: Optional[aiont.Racer]
+        """
 
         raw_data: aiohttp.ClientResponse = await self._get(
             f"https://nitrotype.com/racer/{username}/", session=session
@@ -303,7 +402,16 @@ class Session(cloudscraper.CloudScraper):
         self, tag: str, *, session: aiohttp.ClientSession = None
     ) -> Optional[Team]:
 
-        """Get a team with a tag."""
+        """
+        Get a team with a tag.
+        
+        :param tag: The team's tag.
+        :type tag: str
+        :param session: The aiohttp session to use.
+        :type session: aiohttp.ClientSession or None
+        :raise aiont.HTTPException: Getting the team failed.
+        :rtype: Optional[aiont.Team]
+        """
 
         raw_data: aiohttp.ClientResponse = await self._get(
             f"https://nitrotype.com/api/teams/{tag}/", session=session
