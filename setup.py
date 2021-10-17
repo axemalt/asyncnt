@@ -26,7 +26,6 @@ setup(name='asyncnt',
     description='An asynchronous way to fetch team and racer statistics from nitrotype.',
     install_requires=['cloudscraper', 'aiohttp'],
     long_description=readme,
-    long_description_content_type="text/x-rst",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
