@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 
 from typing import Optional, Type, List, Dict
@@ -37,7 +37,32 @@ import cloudscraper
 import asyncio
 import aiohttp
 import json
+import time
 import re
+
+
+class _RateLimit:
+    def __init__(self) -> None:
+        self.rate: int = 10
+        self.per: float = 1
+        self._event = asyncio.Event()
+        self._window: float = 0.0
+        self._tokens: int = self.rate
+
+    async def update_rate_limit(self) -> None:
+        current = time.time()
+
+        if current > self._window + self.per:
+            self._tokens = self.rate - 1
+            self._window = current
+
+        elif self._tokens == 0:
+            self._event.clear()
+            seconds_left = self.per - (current - self._window)
+            await asyncio.sleep(seconds_left)
+
+            self._tokens = self.rate
+            self._event.set()
 
 
 class AsyncNTException(Exception):
@@ -339,6 +364,11 @@ class Session(cloudscraper.CloudScraper):
     def __init__(self) -> None:
         super().__init__()
 
+        self.per: float = 1
+        self.rate: int = 10
+        self._event = asyncio.Event()
+        self._window: float = 0.0
+        self._tokens: int = self.rate
         self._session = aiohttp.ClientSession()
 
     def __del__(self) -> None:
@@ -358,7 +388,26 @@ class Session(cloudscraper.CloudScraper):
 
         await self._session.close()
 
+    async def _set_rate_limit(self, seconds_left):
+        self._event.clear()
+        await asyncio.sleep(seconds_left)
+        self._event.set()
+
+    async def _update_rate_limit(self) -> None:
+        current = time.time()
+
+        if self._tokens == 0:
+            seconds_left = self.per - (current - self._window)
+            loop = asyncio.get_event_loop()
+            loop.create_task(self._set_rate_limit(seconds_left))
+
+        self._tokens = self.rate - 1
+        self._window = current
+
     async def _get(self, url: str) -> aiohttp.ClientResponse:
+        await self._event.wait()
+        await self._update_rate_limit()
+
         response: aiohttp.ClientResponse = await self._session.get(
             url, headers=self.headers
         )

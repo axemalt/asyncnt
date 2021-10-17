@@ -33,7 +33,7 @@ Basic Usage:
             #print team's daily speed
             print(team.daily_speed)
 
-Check out the `docs <https://asyncnt.readthedocs.io/en/latest/index.html#>`_ for more information.
+Check out the `docs <https://asyncnt.readthedocs.io/en/stable/>`_ for more information.
 
 Lisence
 =======
