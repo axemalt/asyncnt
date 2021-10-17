@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 
 from typing import Optional, Type, List, Dict
@@ -112,7 +112,7 @@ class Racer:
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
-        
+
         #: The racer's user ID.
         self.id: int = data["userID"]
         #: The racer's username.
@@ -135,29 +135,29 @@ class Racer:
         self.nitros_used: int = data["nitrosUsed"]
         #: The racer's amount of owned and used nitros.
         self.nitros_total: int = self.nitros + self.nitros_used
-        
+
         #: The racer's amount of races.
         self.races: int = data["racesPlayed"]
-        
+
         #: The racer's team tag. ``None`` if the racer has no team.
         self.team_tag: Optional[str] = data["tag"]
-        
+
         #: The racer's average speed.
         self.average_speed: int = data["avgSpeed"]
         #: The racer's highest speed.
         self.high_speed: int = data["highestSpeed"]
-        
+
         #: Whether the racer allows friend requests.
         self.friend_reqs_allowed: bool = bool(data["allowFriendRequests"])
         #: Whether the racer allows team invites.
         self.looking_for_team: bool = bool(data["lookingForTeam"])
-        
+
         #: The racer's creation time.
         self.created: int = data["createdStamp"]
-        
+
         #: The racer's current car.
         self.car: Car = Car([data["carID"], "owned", data["carHueAngle"]])
-        
+
         #: The racer's amount of owned cars.
         self.cars_owned: int = 0
         #: The racer's amount of sold cars.
@@ -182,7 +182,7 @@ class Racer:
     async def get_team(self) -> Optional[Team]:
         """
         Return the team the racer is on.
-        
+
         :raise asyncnt.HTTPException: Getting the team failed.
         :return: The racer's team. ``None`` if the racer has no team.
         :rtype: Optional[asyncnt.Team]
@@ -211,7 +211,7 @@ class Team:
 
         #: Whether the team allows new members.
         self.open: bool = info["enrollment"] == "open"
-        
+
         #: The team's creation time.
         self.created: int = info["createdStamp"]
         #: The team's amount of profile views.
@@ -274,7 +274,7 @@ class Team:
     async def get_captain(self) -> Racer:
         """
         Return the captain of the team.
-        
+
         :raise asyncnt.HTTPException: Getting the captain failed.
         :return: The team's captain.
         :rtype: asyncnt.Racer
@@ -288,7 +288,7 @@ class Team:
 
         """
         Get the leaders of the team.
-        
+
         :param include_captain: If the captain should be included. Defaults to ``False``.
         :type include_captain: bool
         :raise asyncnt.HTTPException: Getting the leaders failed.
@@ -309,10 +309,10 @@ class Team:
     async def get_members(
         self, *, include_leaders: bool = False
     ) -> List[Optional[Racer]]:
-    
+
         """
         Get the members of the team.
-        
+
         :param include_leaders: If the captain should be included. Defaults to ``False``.
         :type include_leaders: bool
         :raise asyncnt.HTTPException: Getting the members failed.
@@ -355,38 +355,31 @@ class Session(cloudscraper.CloudScraper):
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-
+    
         await self._session.close()
 
-    async def _get(
-        self, url: str, *, session: Optional[aiohttp.ClientSession] = None
-    ) -> aiohttp.ClientResponse:
-
-        session = session or self._session
-        response: aiohttp.ClientResponse = await session.get(url, headers=self.headers)
+    async def _get(self, url: str) -> aiohttp.ClientResponse:
+        response: aiohttp.ClientResponse = await self._session.get(
+            url, headers=self.headers
+        )
 
         if response.status == 200:
             return response
         else:
             raise HTTPException(response)
 
-    async def get_racer(
-        self, username: str, *, session: Optional[aiohttp.ClientSession] = None
-    ) -> Optional[Racer]:
-
+    async def get_racer(self, username: str) -> Optional[Racer]:
         """
         Get a racer with a username.
-        
+
         :param username: The racer's username.
         :type username: str
-        :param session: The aiohttp session to use.
-        :type session: aiohttp.ClientSession or None
         :raise asyncnt.HTTPException: Getting the racer failed.
         :rtype: Optional[asyncnt.Racer]
         """
 
         raw_data: aiohttp.ClientResponse = await self._get(
-            f"https://nitrotype.com/racer/{username}/", session=session
+            f"https://nitrotype.com/racer/{username}/"
         )
         text: str = await raw_data.text()
 
@@ -398,13 +391,10 @@ class Session(cloudscraper.CloudScraper):
 
         return Racer(data, scraper=self)
 
-    async def get_team(
-        self, tag: str, *, session: aiohttp.ClientSession = None
-    ) -> Optional[Team]:
-
+    async def get_team(self, tag: str) -> Optional[Team]:
         """
         Get a team with a tag.
-        
+
         :param tag: The team's tag.
         :type tag: str
         :param session: The aiohttp session to use.
@@ -414,7 +404,7 @@ class Session(cloudscraper.CloudScraper):
         """
 
         raw_data: aiohttp.ClientResponse = await self._get(
-            f"https://nitrotype.com/api/teams/{tag}/", session=session
+            f"https://nitrotype.com/api/teams/{tag}/"
         )
         data: Dict = await raw_data.json()
 
