@@ -355,7 +355,7 @@ class Session(cloudscraper.CloudScraper):
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-    
+
         await self._session.close()
 
     async def _get(self, url: str) -> aiohttp.ClientResponse:
@@ -397,8 +397,6 @@ class Session(cloudscraper.CloudScraper):
 
         :param tag: The team's tag.
         :type tag: str
-        :param session: The aiohttp session to use.
-        :type session: aiohttp.ClientSession or None
         :raise asyncnt.HTTPException: Getting the team failed.
         :rtype: Optional[asyncnt.Team]
         """

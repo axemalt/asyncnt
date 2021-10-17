@@ -84,14 +84,11 @@
 <dd><p>First-class interface for making HTTP requests to Nitro Type.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="asyncnt.Session.get_racer">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_racer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client.ClientSession</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Racer" title="asyncnt.Racer"><span class="pre">asyncnt.Racer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_racer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_racer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Racer" title="asyncnt.Racer"><span class="pre">asyncnt.Racer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_racer" title="Permalink to this definition"></a></dt>
 <dd><p>Get a racer with a username.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>username</strong> (<em>str</em>) – The racer’s username.</p></li>
-<li><p><strong>session</strong> (<em>aiohttp.ClientSession</em><em> or </em><em>None</em>) – The aiohttp session to use.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>username</strong> (<em>str</em>) – The racer’s username.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference internal" href="exceptions.html#asyncnt.HTTPException" title="asyncnt.HTTPException"><strong>asyncnt.HTTPException</strong></a> – Getting the racer failed.</p>
@@ -104,14 +101,11 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="asyncnt.Session.get_team">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client.ClientSession</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Team" title="asyncnt.Team"><span class="pre">asyncnt.Team</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_team" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Team" title="asyncnt.Team"><span class="pre">asyncnt.Team</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_team" title="Permalink to this definition"></a></dt>
 <dd><p>Get a team with a tag.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tag</strong> (<em>str</em>) – The team’s tag.</p></li>
-<li><p><strong>session</strong> (<em>aiohttp.ClientSession</em><em> or </em><em>None</em>) – The aiohttp session to use.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>tag</strong> (<em>str</em>) – The team’s tag.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference internal" href="exceptions.html#asyncnt.HTTPException" title="asyncnt.HTTPException"><strong>asyncnt.HTTPException</strong></a> – Getting the team failed.</p>
