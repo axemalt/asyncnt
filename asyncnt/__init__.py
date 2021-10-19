@@ -25,6 +25,8 @@ SOFTWARE.
 
 from __future__ import annotations
 
+from aiohttp.typedefs import JSONDecoder
+
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
@@ -366,11 +368,10 @@ class Session(cloudscraper.CloudScraper):
 
         self.per: float = 1
         self.rate: int = 10
-        self._event = asyncio.Event()
-        self._event.set()
         self._window: float = 0.0
         self._tokens: int = self.rate
         self._session = aiohttp.ClientSession()
+        self._condition = asyncio.Condition()
 
     def __del__(self) -> None:
         if not self._session.closed:
@@ -389,26 +390,27 @@ class Session(cloudscraper.CloudScraper):
 
         await self._session.close()
 
-    async def _set_rate_limit(self, seconds_left):
-        self._event.clear()
-        await asyncio.sleep(seconds_left)
-        self._event.set()
-
-    async def _update_rate_limit(self) -> None:
+    def _update_rate_limit(self) -> None:
         current = time.time()
 
-        if self._tokens == 0:
-            seconds_left = self.per - (current - self._window)
-            loop = asyncio.get_event_loop()
-            loop.create_task(self._set_rate_limit(seconds_left))
+        if current > self._window + self.per:
+            self._tokens = self.rate
+            self._window = current
 
-        self._tokens = self.rate - 1
-        self._window = current
+        if self._tokens == 0:
+            return self.per - (current - self._window)
+
+        self._tokens -= 1
+        return -1
 
     async def _get(self, url: str) -> aiohttp.ClientResponse:
-        await self._event.wait()
-        await self._update_rate_limit()
-
+        async with self._condition:
+            wait_for = await self._condition.wait_for(self._update_rate_limit)
+            if wait_for != -1:
+                await asyncio.sleep(wait_for)
+                self._update_rate_limit()
+                self._condition.notify(self.rate - 1)
+        print("requesting")
         response: aiohttp.ClientResponse = await self._session.get(
             url, headers=self.headers
         )
@@ -417,6 +419,7 @@ class Session(cloudscraper.CloudScraper):
             return response
         else:
             raise HTTPException(response)
+
 
     async def get_racer(self, username: str) -> Optional[Racer]:
         """
