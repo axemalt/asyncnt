@@ -25,12 +25,10 @@ SOFTWARE.
 
 from __future__ import annotations
 
-from aiohttp.typedefs import JSONDecoder
-
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 from typing import Optional, Type, List, Dict
