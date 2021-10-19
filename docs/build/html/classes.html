@@ -83,6 +83,26 @@
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asyncnt.</span></span><span class="sig-name descname"><span class="pre">Session</span></span><a class="headerlink" href="#asyncnt.Session" title="Permalink to this definition"></a></dt>
 <dd><p>First-class interface for making HTTP requests to Nitro Type.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="asyncnt.Session.get">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client_reqrep.ClientResponse</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get" title="Permalink to this definition"></a></dt>
+<dd><p>Gets data from Nitro Type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>str</em>) – The url to get data from.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#asyncnt.HTTPException" title="asyncnt.HTTPException"><strong>asyncnt.HTTPException</strong></a> – Getting the data failed.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The data from the url.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Optional[aiohttp.ClientResponse]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="asyncnt.Session.get_racer">
 <em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_racer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Racer" title="asyncnt.Racer"><span class="pre">asyncnt.Racer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_racer" title="Permalink to this definition"></a></dt>
 <dd><p>Get a racer with a username.</p>
@@ -91,10 +111,16 @@
 <dd class="field-odd"><p><strong>username</strong> (<em>str</em>) – The racer’s username.</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="exceptions.html#asyncnt.HTTPException" title="asyncnt.HTTPException"><strong>asyncnt.HTTPException</strong></a> – Getting the racer failed.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#asyncnt.InvalidRacerUsername" title="asyncnt.InvalidRacerUsername"><strong>asyncnt.InvalidRacerUsername</strong></a> – The username given is invalid.</p></li>
+<li><p><a class="reference internal" href="exceptions.html#asyncnt.HTTPException" title="asyncnt.HTTPException"><strong>asyncnt.HTTPException</strong></a> – Getting the racer failed.</p></li>
+</ul>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Optional[<a class="reference internal" href="#asyncnt.Racer" title="asyncnt.Racer">asyncnt.Racer</a>]</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The racer with the given username.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Optional[<a class="reference internal" href="#asyncnt.Racer" title="asyncnt.Racer">asyncnt.Racer</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -108,10 +134,16 @@
 <dd class="field-odd"><p><strong>tag</strong> (<em>str</em>) – The team’s tag.</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="exceptions.html#asyncnt.HTTPException" title="asyncnt.HTTPException"><strong>asyncnt.HTTPException</strong></a> – Getting the team failed.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#asyncnt.InvalidTeamTag" title="asyncnt.InvalidTeamTag"><strong>asyncnt.InvalidTeamTag</strong></a> – The tag given is invalid.</p></li>
+<li><p><a class="reference internal" href="exceptions.html#asyncnt.HTTPException" title="asyncnt.HTTPException"><strong>asyncnt.HTTPException</strong></a> – Getting the team failed.</p></li>
+</ul>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Optional[<a class="reference internal" href="#asyncnt.Team" title="asyncnt.Team">asyncnt.Team</a>]</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The team with the given tag.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Optional[<a class="reference internal" href="#asyncnt.Team" title="asyncnt.Team">asyncnt.Team</a>]</p>
 </dd>
 </dl>
 </dd></dl>

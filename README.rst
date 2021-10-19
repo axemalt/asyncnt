@@ -1,7 +1,7 @@
 AsyncNT
 =======
 
-An asynchronous way to fetch team and racer statistics from
+An asynchronous way to fetch data from
 `nitrotype <https://nitrotype.com>`_.
 
 Installation

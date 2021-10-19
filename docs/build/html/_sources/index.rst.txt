@@ -1,7 +1,7 @@
 Welcome to AsyncNT's documentation!
 ===================================
 
-**AsyncNT** is an asynchronous way to fetch team and racer statistics from
+**AsyncNT** is an asynchronous way to fetch data from
 `nitrotype <https://nitrotype.com>`_.
 
 .. note::

@@ -43,30 +43,6 @@ import time
 import re
 
 
-class _RateLimit:
-    def __init__(self) -> None:
-        self.rate: int = 10
-        self.per: float = 1
-        self._event = asyncio.Event()
-        self._window: float = 0.0
-        self._tokens: int = self.rate
-
-    async def update_rate_limit(self) -> None:
-        current = time.time()
-
-        if current > self._window + self.per:
-            self._tokens = self.rate - 1
-            self._window = current
-
-        elif self._tokens == 0:
-            self._event.clear()
-            seconds_left = self.per - (current - self._window)
-            await asyncio.sleep(seconds_left)
-
-            self._tokens = self.rate
-            self._event.set()
-
-
 class AsyncNTException(Exception):
     """Base exception class for asyncnt."""
 
@@ -368,10 +344,11 @@ class Session(cloudscraper.CloudScraper):
 
         self.per: float = 1
         self.rate: int = 10
+        self._lock: asyncio.Lock = asyncio.Lock()
         self._window: float = 0.0
         self._tokens: int = self.rate
-        self._session = aiohttp.ClientSession()
-        self._condition = asyncio.Condition()
+        self._session: aiohttp.ClientSession = aiohttp.ClientSession()
+        self._semaphore: asyncio.Semaphore = asyncio.Semaphore(value=self.rate)
 
     def __del__(self) -> None:
         if not self._session.closed:
@@ -390,7 +367,7 @@ class Session(cloudscraper.CloudScraper):
 
         await self._session.close()
 
-    def _update_rate_limit(self) -> None:
+    def _update_rate_limit(self) -> Optional[float]:
         current = time.time()
 
         if current > self._window + self.per:
@@ -401,19 +378,28 @@ class Session(cloudscraper.CloudScraper):
             return self.per - (current - self._window)
 
         self._tokens -= 1
-        return -1
 
-    async def _get(self, url: str) -> aiohttp.ClientResponse:
-        async with self._condition:
-            wait_for = await self._condition.wait_for(self._update_rate_limit)
-            if wait_for != -1:
+    async def get(self, url: str) -> Optional[aiohttp.ClientResponse]:
+        """
+        Gets data from Nitro Type.
+
+        :param url: The url to get data from.
+        :type url: str
+        :raise asyncnt.HTTPException: Getting the data failed.
+        :return: The data from the url.
+        :rtype: Optional[aiohttp.ClientResponse]
+        """
+
+        async with self._lock:
+            wait_for = self._update_rate_limit()
+            if wait_for:
                 await asyncio.sleep(wait_for)
                 self._update_rate_limit()
-                self._condition.notify(self.rate - 1)
-        print("requesting")
-        response: aiohttp.ClientResponse = await self._session.get(
-            url, headers=self.headers
-        )
+        
+        async with self._semaphore:
+            response: aiohttp.ClientResponse = await self._session.get(
+                url, headers=self.headers
+            )
 
         if response.status == 200:
             return response
@@ -427,11 +413,13 @@ class Session(cloudscraper.CloudScraper):
 
         :param username: The racer's username.
         :type username: str
+        :raise asyncnt.InvalidRacerUsername: The username given is invalid.
         :raise asyncnt.HTTPException: Getting the racer failed.
+        :return: The racer with the given username.
         :rtype: Optional[asyncnt.Racer]
         """
 
-        raw_data: aiohttp.ClientResponse = await self._get(
+        raw_data: aiohttp.ClientResponse = await self.get(
             f"https://nitrotype.com/racer/{username}/"
         )
         text: str = await raw_data.text()
@@ -450,11 +438,13 @@ class Session(cloudscraper.CloudScraper):
 
         :param tag: The team's tag.
         :type tag: str
+        :raise asyncnt.InvalidTeamTag: The tag given is invalid.
         :raise asyncnt.HTTPException: Getting the team failed.
+        :return: The team with the given tag.
         :rtype: Optional[asyncnt.Team]
         """
 
-        raw_data: aiohttp.ClientResponse = await self._get(
+        raw_data: aiohttp.ClientResponse = await self.get(
             f"https://nitrotype.com/api/teams/{tag}/"
         )
         data: Dict = await raw_data.json()
