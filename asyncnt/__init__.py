@@ -66,11 +66,12 @@ class InvalidTeamTag(AsyncNTException):
 class HTTPException(AsyncNTException):
     """Exception that is raised when an HTTP request operation fails."""
 
+    __slots__ = ["response", "status", "code"]
+
     def __init__(self, response: aiohttp.ClientResponse):
         self.response = response
         self.status: int = response.status
-        self.code: int
-        self.code = 0
+        self.code: int = 0
 
         fmt = "{0.status} {0.reason} (error code: {1})"
 
@@ -79,6 +80,8 @@ class HTTPException(AsyncNTException):
 
 class Car:
     """Represents a Nitro Type car."""
+
+    __slots__ = ["id", "hue_angle", "url"]
 
     def __init__(self, data):
         #: The car's id.
@@ -97,6 +100,8 @@ class Car:
 class Loot:
     """Represents a Nitro Type loot."""
 
+    __slots__ = ["id", "type", "name", "rarity"]
+
     def __init__(self, data):
         #: The loot's ID.
         self.id: int = data["lootID"]
@@ -110,6 +115,33 @@ class Loot:
 
 class Racer:
     """Represents a Nitro Type racer."""
+
+    __slots__ = [
+        "id",
+        "username",
+        "display_name",
+        "membership",
+        "level",
+        "experience",
+        "profile_views",
+        "nitros",
+        "nitros_used",
+        "nitros_total",
+        "races",
+        "team_tag",
+        "average_speed",
+        "high_speed",
+        "friend_reqs_allowed",
+        "looking_for_team",
+        "created",
+        "car",
+        "cars",
+        "cars_owned",
+        "cars_sold",
+        "cars_total",
+        "loot",
+        "_scraper",
+    ]
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
@@ -196,6 +228,32 @@ class Racer:
 
 class Team:
     """Represents a Nitro Type Team."""
+
+    __slots__ = [
+        "id",
+        "tag",
+        "name",
+        "open",
+        "created",
+        "profile_views",
+        "member_count",
+        "min_level",
+        "min_races",
+        "description",
+        "daily_speed",
+        "daily_accuracy",
+        "daily_points",
+        "daily_races",
+        "season_speed",
+        "season_accuracy",
+        "season_points",
+        "season_races",
+        "all_time_speed",
+        "all_time_accuracy",
+        "all_time_races",
+        "all_time_points",
+        "_scraper",
+    ]
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
@@ -335,7 +393,19 @@ class Team:
 class Session(cloudscraper.CloudScraper):
     """First-class interface for making HTTP requests to Nitro Type."""
 
-    __slots__ = ["_session", "headers"]
+    __slots__ = [
+        "per",
+        "rate",
+        "cache_for",
+        "headers",
+        "_lock",
+        "_loop",
+        "_cache",
+        "_window",
+        "_tokens",
+        "_session",
+        "_semaphore",
+    ]
 
     def __init__(self) -> None:
         super().__init__()
@@ -393,8 +463,8 @@ class Session(cloudscraper.CloudScraper):
         :return: The data from the url.
         :rtype: Optional[aiohttp.ClientResponse]
         """
-        
-        if (result := self._cache.get(url)):
+
+        if result := self._cache.get(url):
             return result
 
         async with self._lock:
@@ -402,7 +472,7 @@ class Session(cloudscraper.CloudScraper):
             if wait_for:
                 await asyncio.sleep(wait_for)
                 self._update_rate_limit()
-        
+
         async with self._semaphore:
             response: aiohttp.ClientResponse = await self._session.get(
                 url, headers=self.headers
@@ -414,7 +484,6 @@ class Session(cloudscraper.CloudScraper):
             return response
         else:
             raise HTTPException(response)
-
 
     async def get_racer(self, username: str) -> Optional[Racer]:
         """
