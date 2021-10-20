@@ -4,6 +4,14 @@ AsyncNT
 An asynchronous way to fetch data from
 `nitrotype <https://nitrotype.com>`_.
 
+Features
+========
+
+* Asyncio support
+* Access to the Nitro Type API
+* Rate limit of 10 requests per second
+* Cache to speed up requests
+
 Installation
 ============
 
@@ -11,7 +19,7 @@ Installation
 
     pip install asyncnt
 
-Basic Usage:
+Basic Usage
 ============
 
 .. code:: python

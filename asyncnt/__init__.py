@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.2.1"
+__version__ = "1.3.0"
 
 
 from typing import Optional, Type, List, Dict
@@ -342,7 +342,10 @@ class Session(cloudscraper.CloudScraper):
 
         self.per: float = 1
         self.rate: int = 10
+        self.cache_for = 300
         self._lock: asyncio.Lock = asyncio.Lock()
+        self._loop = asyncio.get_event_loop()
+        self._cache: Dict[str, aiohttp.ClientResponse] = {}
         self._window: float = 0.0
         self._tokens: int = self.rate
         self._session: aiohttp.ClientSession = aiohttp.ClientSession()
@@ -350,8 +353,7 @@ class Session(cloudscraper.CloudScraper):
 
     def __del__(self) -> None:
         if not self._session.closed:
-            loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
-            loop.create_task(self._session.close())
+            self._loop.create_task(self._session.close())
 
     async def __aenter__(self) -> Session:
         return self
@@ -377,6 +379,10 @@ class Session(cloudscraper.CloudScraper):
 
         self._tokens -= 1
 
+    async def _remove_from_cache(self, url):
+        await asyncio.sleep(self.cache_for)
+        self._cache.pop(url)
+
     async def get(self, url: str) -> Optional[aiohttp.ClientResponse]:
         """
         Gets data from Nitro Type.
@@ -387,6 +393,9 @@ class Session(cloudscraper.CloudScraper):
         :return: The data from the url.
         :rtype: Optional[aiohttp.ClientResponse]
         """
+        
+        if (result := self._cache.get(url)):
+            return result
 
         async with self._lock:
             wait_for = self._update_rate_limit()
@@ -400,6 +409,8 @@ class Session(cloudscraper.CloudScraper):
             )
 
         if response.status == 200:
+            self._cache[url] = response
+            self._loop.create_task(self._remove_from_cache(url))
             return response
         else:
             raise HTTPException(response)
