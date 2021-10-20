@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 
 from typing import Optional, Type, List, Dict
