@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 
 from typing import Optional, Type, List, Dict
@@ -255,7 +255,7 @@ class Team:
         "_scraper",
         "_captain_username",
         "_leader_usernames",
-        "_member_usernames"
+        "_member_usernames",
     ]
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
@@ -405,16 +405,12 @@ class Session:
         "_cache",
         "_window",
         "_tokens",
-        "_headers",
         "_session",
     ]
 
     def __init__(self) -> None:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Accept-Encoding": "gzip, deflate"
         }
 
         self.per: float = 1
