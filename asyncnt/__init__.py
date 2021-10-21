@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.3.1"
+__version__ = "1.4.0"
 
 
 from typing import Optional, Type, List, Dict
@@ -238,6 +238,7 @@ class Team:
         "member_count",
         "min_level",
         "min_races",
+        "min_speed",
         "description",
         "daily_speed",
         "daily_accuracy",
@@ -252,6 +253,9 @@ class Team:
         "all_time_races",
         "all_time_points",
         "_scraper",
+        "_captain_username",
+        "_leader_usernames",
+        "_member_usernames"
     ]
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
@@ -403,7 +407,6 @@ class Session:
         "_tokens",
         "_headers",
         "_session",
-        "_semaphore",
     ]
 
     def __init__(self) -> None:
@@ -424,7 +427,6 @@ class Session:
         self._window: float = 0.0
         self._tokens: int = self.rate
         self._session: aiohttp.ClientSession = aiohttp.ClientSession(headers=headers)
-        self._semaphore: asyncio.Semaphore = asyncio.Semaphore(value=self.rate)
 
     def __del__(self) -> None:
         if not self._session.closed:
@@ -478,8 +480,7 @@ class Session:
                 await asyncio.sleep(wait_for)
                 self._update_rate_limit()
 
-        async with self._semaphore:
-            response: aiohttp.ClientResponse = await self._session.get(url)
+        response: aiohttp.ClientResponse = await self._session.get(url)
 
         if response.status == 200:
             self._cache[url] = response
