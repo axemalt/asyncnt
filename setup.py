@@ -24,7 +24,7 @@ setup(name='asyncnt',
     package_data={'asyncnt': ['py.typed']},
     license='MIT',
     description='An asynchronous way to fetch data from nitrotype.',
-    install_requires=['cloudscraper', 'aiohttp'],
+    install_requires=['aiohttp'],
     long_description=readme,
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -33,7 +33,6 @@ __version__ = "1.3.1"
 
 from typing import Optional, Type, List, Dict
 from types import TracebackType
-import cloudscraper
 import asyncio
 import aiohttp
 import json
@@ -390,35 +389,41 @@ class Team:
         return await asyncio.gather(*coruntines)
 
 
-class Session(cloudscraper.CloudScraper):
+class Session:
     """First-class interface for making HTTP requests to Nitro Type."""
 
     __slots__ = [
         "per",
         "rate",
         "cache_for",
-        "headers",
         "_lock",
         "_loop",
         "_cache",
         "_window",
         "_tokens",
+        "_headers",
         "_session",
         "_semaphore",
     ]
 
     def __init__(self) -> None:
-        super().__init__()
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate"
+        }
 
         self.per: float = 1
         self.rate: int = 10
         self.cache_for = 300
+
         self._lock: asyncio.Lock = asyncio.Lock()
         self._loop = asyncio.get_event_loop()
         self._cache: Dict[str, aiohttp.ClientResponse] = {}
         self._window: float = 0.0
         self._tokens: int = self.rate
-        self._session: aiohttp.ClientSession = aiohttp.ClientSession()
+        self._session: aiohttp.ClientSession = aiohttp.ClientSession(headers=headers)
         self._semaphore: asyncio.Semaphore = asyncio.Semaphore(value=self.rate)
 
     def __del__(self) -> None:
@@ -474,9 +479,7 @@ class Session(cloudscraper.CloudScraper):
                 self._update_rate_limit()
 
         async with self._semaphore:
-            response: aiohttp.ClientResponse = await self._session.get(
-                url, headers=self.headers
-            )
+            response: aiohttp.ClientResponse = await self._session.get(url)
 
         if response.status == 200:
             self._cache[url] = response
