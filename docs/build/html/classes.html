@@ -82,9 +82,69 @@
 <dt class="sig sig-object py" id="asyncnt.Session">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asyncnt.</span></span><span class="sig-name descname"><span class="pre">Session</span></span><a class="headerlink" href="#asyncnt.Session" title="Permalink to this definition"></a></dt>
 <dd><p>First-class interface for making HTTP requests to Nitro Type.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="asyncnt.Session.get">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client_reqrep.ClientResponse</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get" title="Permalink to this definition"></a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="asyncnt.Session.rate_limit">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">rate_limit</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#asyncnt.Session.rate_limit" title="Permalink to this definition"></a></dt>
+<dd><p>The number of tokens available per <a class="reference internal" href="#asyncnt.Session.limit_for" title="asyncnt.Session.limit_for"><code class="xref py py-attr docutils literal notranslate"><span class="pre">asyncnt.Session.limit_for</span></code></a> seconds. Defaults to 10.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="asyncnt.Session.limit_for">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">limit_for</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#asyncnt.Session.limit_for" title="Permalink to this definition"></a></dt>
+<dd><p>The length of the rate limit in seconds. Defaults to 1.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="asyncnt.Session.cache_for">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cache_for</span></span><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#asyncnt.Session.cache_for" title="Permalink to this definition"></a></dt>
+<dd><p>The amount of time in seconds to cache results for. Defaults to 300.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="asyncnt.Session.Session.set_rate_limit">
+<span class="sig-name descname"><span class="pre">set_rate_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#asyncnt.Session.Session.set_rate_limit" title="Permalink to this definition"></a></dt>
+<dd><p>Set the number of tokens available per <a class="reference internal" href="#asyncnt.Session.limit_for" title="asyncnt.Session.limit_for"><code class="xref py py-attr docutils literal notranslate"><span class="pre">asyncnt.Session.limit_for</span></code></a> seconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em>) – The amount of tokens.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#asyncnt.InvalidArgument" title="asyncnt.InvalidArgument"><strong>asyncnt.InvalidArgument</strong></a> – The value provided is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="asyncnt.Session.Session.set_limit_for">
+<span class="sig-name descname"><span class="pre">set_limit_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#asyncnt.Session.Session.set_limit_for" title="Permalink to this definition"></a></dt>
+<dd><p>Set the length of the rate limit in seconds. If the value is 0, there is no rate limit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>int</em><em>]</em>) – The amount of seconds the rate limit lasts.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#asyncnt.InvalidArgument" title="asyncnt.InvalidArgument"><strong>asyncnt.InvalidArgument</strong></a> – The value provided is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="asyncnt.Session.Session.set_cache_for">
+<span class="sig-name descname"><span class="pre">set_cache_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#asyncnt.Session.Session.set_cache_for" title="Permalink to this definition"></a></dt>
+<dd><p>Set the amount of time in seconds to cache results. If the value is 0, results will not be cached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>int</em><em>]</em>) – The amount of seconds to cache results for.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#asyncnt.InvalidArgument" title="asyncnt.InvalidArgument"><strong>asyncnt.InvalidArgument</strong></a> – The value provided is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="asyncnt.Session.Session.get">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">aiohttp.client_reqrep.ClientResponse</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.Session.get" title="Permalink to this definition"></a></dt>
 <dd><p>Gets data from Nitro Type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -102,9 +162,9 @@
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="asyncnt.Session.get_racer">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_racer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Racer" title="asyncnt.Racer"><span class="pre">asyncnt.Racer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_racer" title="Permalink to this definition"></a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="asyncnt.Session.Session.get_racer">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_racer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Racer" title="asyncnt.Racer"><span class="pre">asyncnt.Racer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.Session.get_racer" title="Permalink to this definition"></a></dt>
 <dd><p>Get a racer with a username.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -125,9 +185,9 @@
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="asyncnt.Session.get_team">
-<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Team" title="asyncnt.Team"><span class="pre">asyncnt.Team</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_team" title="Permalink to this definition"></a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="asyncnt.Session.Session.get_team">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_team</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Team" title="asyncnt.Team"><span class="pre">asyncnt.Team</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.Session.get_team" title="Permalink to this definition"></a></dt>
 <dd><p>Get a team with a tag.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

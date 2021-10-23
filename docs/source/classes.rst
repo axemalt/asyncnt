@@ -5,7 +5,24 @@ Session Class
 -------------
 
 .. autoclass:: asyncnt.Session
-    :members:
+    
+    .. autoproperty:: rate_limit
+    
+    .. autoproperty:: limit_for
+    
+    .. autoproperty:: cache_for
+
+    .. autofunction:: asyncnt.Session.set_rate_limit
+
+    .. autofunction:: asyncnt.Session.set_limit_for
+
+    .. autofunction:: asyncnt.Session.set_cache_for
+
+    .. autofunction:: asyncnt.Session.get
+
+    .. autofunction:: asyncnt.Session.get_racer
+    
+    .. autofunction:: asyncnt.Session.get_team
 
 Racer Class
 -----------

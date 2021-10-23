@@ -28,10 +28,10 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 
-from typing import Optional, Type, List, Dict
+from typing import Optional, Union, Type, List, Dict
 from types import TracebackType
 import asyncio
 import aiohttp
@@ -44,6 +44,13 @@ class AsyncNTException(Exception):
     """Base exception class for asyncnt."""
 
     pass
+
+class InvalidArgument(AsyncNTException):
+    """Exception that is raised when an argument provided is invalid."""
+
+    def __init__(self, arg: str, restriction: str) -> None:
+        message = f"{arg} must be {restriction}"
+        super().__init__(message)
 
 
 class InvalidRacerUsername(AsyncNTException):
@@ -397,9 +404,9 @@ class Session:
     """First-class interface for making HTTP requests to Nitro Type."""
 
     __slots__ = [
-        "per",
-        "rate",
-        "cache_for",
+        "_limit_for",
+        "_rate_limit",
+        "_cache_for",
         "_lock",
         "_loop",
         "_cache",
@@ -413,15 +420,15 @@ class Session:
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36",
         }
 
-        self.per: float = 1
-        self.rate: int = 10
-        self.cache_for = 300
+        self._limit_for: float = 1
+        self._rate_limit: int = 10
+        self._cache_for: float = 300
 
         self._lock: asyncio.Lock = asyncio.Lock()
         self._loop = asyncio.get_event_loop()
         self._cache: Dict[str, aiohttp.ClientResponse] = {}
         self._window: float = 0.0
-        self._tokens: int = self.rate
+        self._tokens: int = self._rate_limit
         self._session: aiohttp.ClientSession = aiohttp.ClientSession(headers=headers)
 
     def __del__(self) -> None:
@@ -440,20 +447,94 @@ class Session:
 
         await self._session.close()
 
+    @property
+    def rate_limit(self) -> int:
+        """The number of tokens available per :attr:`asyncnt.Session.limit_for` seconds. Defaults to 10."""
+
+        return self._rate_limit
+
+    def set_rate_limit(self, value: int) -> None:
+        """
+        Set the number of tokens available per :attr:`asyncnt.Session.limit_for` seconds.
+        
+        :param value: The amount of tokens.
+        :type value: int
+        :raise asyncnt.InvalidArgument: The value provided is invalid.
+        """
+
+        error_message = "an int greater than 0"
+
+        if not isinstance(value, int):
+            raise InvalidArgument("rate_limit", error_message)
+        if value <= 0:
+            raise InvalidArgument("rate_limit", error_message)
+
+        self._rate_limit = value
+
+    @property
+    def limit_for(self) -> Union[float, int]:
+        """The length of the rate limit in seconds. Defaults to 1."""
+
+        return self._limit_for
+
+    def set_limit_for(self, value: Union[float, int]) -> None:
+        """
+        Set the length of the rate limit in seconds. If the value is 0, there is no rate limit.
+        
+        :param value: The amount of seconds the rate limit lasts.
+        :type value: Union[float, int]
+        :raise asyncnt.InvalidArgument: The value provided is invalid.
+        """
+
+        error_message = "a float or int greater or equal to 0"
+
+        if not isinstance(value, (int, float)):
+            raise InvalidArgument("limit_for", error_message)
+        if value < 0:
+            raise InvalidArgument("limit_for", error_message)
+
+        self._limit_for = value
+
+    @property
+    def cache_for(self) -> Union[float, int]:
+        """The amount of time in seconds to cache results for. Defaults to 300."""
+
+        return self._cache_for
+
+    def set_cache_for(self, value: Union[float, int]) -> None:
+        """
+        Set the amount of time in seconds to cache results. If the value is 0, results will not be cached.
+        
+        :param value: The amount of seconds to cache results for.
+        :type value: Union[float, int]
+        :raise asyncnt.InvalidArgument: The value provided is invalid.
+        """
+        
+        error_message = "a float or int greater or equal to 0"
+
+        if not isinstance(value, (int, float)):
+            raise InvalidArgument("cache_for", error_message)
+        if value < 0:
+            raise InvalidArgument("cache_for", error_message)
+
+        if value == 0:
+            self._cache = {}
+        self._cache_for = value
+
     def _update_rate_limit(self) -> Optional[float]:
         current = time.time()
 
-        if current > self._window + self.per:
-            self._tokens = self.rate
+        if current > self._window + self._limit_for:
+            self._tokens = self._rate_limit
             self._window = current
 
         if self._tokens == 0:
-            return self.per - (current - self._window)
+            return self._limit_for - (current - self._window)
 
         self._tokens -= 1
 
-    async def _remove_from_cache(self, url):
-        await asyncio.sleep(self.cache_for)
+    async def _remove_from_cache(self, url: str) -> None:
+        await asyncio.sleep(self._cache_for)
         self._cache.pop(url)
 
     async def get(self, url: str) -> Optional[aiohttp.ClientResponse]:
@@ -470,17 +551,20 @@ class Session:
         if result := self._cache.get(url):
             return result
 
-        async with self._lock:
-            wait_for = self._update_rate_limit()
-            if wait_for:
-                await asyncio.sleep(wait_for)
-                self._update_rate_limit()
+        if self._limit_for != 0:
+            async with self._lock:
+                wait_for = self._update_rate_limit()
+                if wait_for:
+                    await asyncio.sleep(wait_for)
+                    self._update_rate_limit()
 
         response: aiohttp.ClientResponse = await self._session.get(url)
 
         if response.status == 200:
-            self._cache[url] = response
-            self._loop.create_task(self._remove_from_cache(url))
+            if self._cache_for != 0:
+                self._cache[url] = response
+                self._loop.create_task(self._remove_from_cache(url))
+                
             return response
         else:
             raise HTTPException(response)
