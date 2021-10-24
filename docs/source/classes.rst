@@ -6,17 +6,19 @@ Session Class
 
 .. autoclass:: asyncnt.Session
     
-    .. autoproperty:: rate_limit
+    .. autoproperty:: rate
     
     .. autoproperty:: limit_for
     
     .. autoproperty:: cache_for
 
+    .. autoproperty:: cache_maxsize
+
     .. autofunction:: asyncnt.Session.set_rate_limit
 
-    .. autofunction:: asyncnt.Session.set_limit_for
-
     .. autofunction:: asyncnt.Session.set_cache_for
+
+    .. autofunction:: asyncnt.Session.set_cache_maxsize
 
     .. autofunction:: asyncnt.Session.get
 
@@ -34,6 +36,8 @@ Racer Class
     .. autoattribute:: username
 
     .. autoattribute:: display_name
+
+    .. autoattribute:: url
     
     .. autoattribute:: membership
     
@@ -87,6 +91,8 @@ Team Class
     .. autoattribute:: tag
 
     .. autoattribute:: name
+
+    .. autoattribute:: url
 
     .. autoattribute:: open
 
