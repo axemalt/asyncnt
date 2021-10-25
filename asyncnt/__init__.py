@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.4.4"
+__version__ = "1.5.0"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -39,87 +39,6 @@ import aiohttp
 import json
 import time
 import re
-
-
-class _Cache:
-    __slots__ = [
-        "cache",
-        "maxsize",
-        "cache_for",
-        "tasks",
-    ]
-
-    def __init__(self) -> None:
-        self.cache: OrderedDict[str, aiohttp.ClientResponse] = OrderedDict()
-        self.maxsize: int = 128
-        self.cache_for: float = 300
-        self.tasks: List[asyncio.Task] = []
-
-    def __del__(self) -> None:
-        for task in self.tasks:
-            task.cancel()
-
-    def get(self, url: str) -> aiohttp.ClientResponse:
-        return self.cache.get(url)
-
-    def clear(self) -> None:
-        self.cache = OrderedDict()
-    
-    def add(self, url: str, response: aiohttp.ClientResponse) -> None:
-        if self.cache_for != 0 and self.maxsize != 0:
-            self.cache[url] = response
-            task = asyncio.create_task(self.auto_remove(url))
-            self.tasks.append(task)
-
-            if len(self.cache) > self.maxsize:
-                self.cache.popitem(last=False)
-
-    def remove(self, url: str) -> None:
-        try:
-            self.cache.pop(url)
-        except KeyError:
-            pass
-
-    async def auto_remove(self, url: str):
-        await asyncio.sleep(self.cache_for)
-        self.remove(url)
-
-
-class _RateLimit:
-    __slots__ = [
-        "rate",
-        "per",
-        "window",
-        "tokens",
-        "lock",
-    ]
-
-    def __init__(self) -> None:
-        self.lock = asyncio.Lock()
-        self.rate: int = 10
-        self.per: float = 1.0
-        self.window: float = 0.0
-        self.tokens: int = self.rate
-
-    def update(self) -> Optional[float]:
-        current = time.time()
-
-        if current > self.window + self.per:
-            self.tokens = self.rate
-            self.window = current
-
-        if self.tokens == 0:
-            return self.per - (current - self.window)
-
-        self.tokens -= 1
-
-    async def wait(self) -> None:
-        if self.per != 0:
-            async with self.lock:
-                wait_for = self.update()
-                if wait_for:
-                    await asyncio.sleep(wait_for)
-                    self.update()
 
 
 class AsyncNTException(Exception):
@@ -167,6 +86,111 @@ class HTTPException(AsyncNTException):
         super().__init__(fmt.format(self.response, self.code))
 
 
+class _Cache:
+    __slots__ = [
+        "cache",
+        "maxsize",
+        "cache_for",
+        "tasks",
+    ]
+
+    def __init__(self, cache_for: Union[float, int], maxsize: int = 128) -> None:
+        error_message = "a float or int greater or equal to 0"
+        if not isinstance(cache_for, (int, float)):
+            raise InvalidArgument("cache_for", error_message)
+        if cache_for < 0:
+            raise InvalidArgument("cache_for", error_message)
+
+        error_message = "an int greater or equal to 0"
+        if not isinstance(maxsize, int):
+            raise InvalidArgument("cache_maxsize", error_message)
+        if maxsize < 0:
+            raise InvalidArgument("cache_maxsize", error_message)
+
+        self.cache: OrderedDict[str, aiohttp.ClientResponse] = OrderedDict()
+        self.maxsize: int = cache_for
+        self.cache_for: float = maxsize
+        self.tasks: List[asyncio.Task] = []
+
+    def __del__(self) -> None:
+        for task in self.tasks:
+            task.cancel()
+
+    def get(self, url: str) -> aiohttp.ClientResponse:
+        return self.cache.get(url)
+
+    def clear(self) -> None:
+        self.cache = OrderedDict()
+
+    def add(self, url: str, response: aiohttp.ClientResponse) -> None:
+        if self.cache_for != 0 and self.maxsize != 0:
+            self.cache[url] = response
+            task = asyncio.create_task(self.auto_remove(url))
+            self.tasks.append(task)
+
+            if len(self.cache) > self.maxsize:
+                self.cache.popitem(last=False)
+
+    def remove(self, url: str) -> None:
+        try:
+            self.cache.pop(url)
+        except KeyError:
+            pass
+
+    async def auto_remove(self, url: str):
+        await asyncio.sleep(self.cache_for)
+        self.remove(url)
+
+
+class _RateLimit:
+    __slots__ = [
+        "rate",
+        "per",
+        "window",
+        "tokens",
+        "lock",
+    ]
+
+    def __init__(self, rate: int = 10, per: Union[float, int] = 1) -> None:
+        error_message = "an int greater than 0"
+        if not isinstance(rate, int):
+            raise InvalidArgument("rate", error_message)
+        if rate <= 0:
+            raise InvalidArgument("rate", error_message)
+
+        error_message = "a float or int greater or equal to 0"
+        if not isinstance(per, (int, float)):
+            raise InvalidArgument("limit_for", error_message)
+        if per < 0:
+            raise InvalidArgument("limit_for", error_message)
+
+        self.lock = asyncio.Lock()
+        self.rate: int = rate
+        self.per: float = per
+        self.window: float = 0.0
+        self.tokens: int = self.rate
+
+    def update(self) -> Optional[float]:
+        current = time.time()
+
+        if current > self.window + self.per:
+            self.tokens = self.rate
+            self.window = current
+
+        if self.tokens == 0:
+            return self.per - (current - self.window)
+
+        self.tokens -= 1
+
+    async def wait(self) -> None:
+        if self.per != 0:
+            async with self.lock:
+                wait_for = self.update()
+                if wait_for:
+                    await asyncio.sleep(wait_for)
+                    self.update()
+
+
 class Car:
     """Represents a Nitro Type car."""
 
@@ -210,6 +234,7 @@ class Racer:
         "username",
         "display_name",
         "url",
+        "tag_and_name"
         "membership",
         "level",
         "experience",
@@ -244,6 +269,12 @@ class Racer:
         self.display_name: str = data["displayName"] or self.username
         #: The racer's profile url.
         self.url: str = f"https://nitrotype.com/racer/{self.username}"
+        #: The racer's team tag. ``None`` if the racer has no team.
+        self.team_tag: Optional[str] = data["tag"]
+        #: The racer's tag and name. If the racer has no team, this is the same as the display name.
+        self.tag_and_name = self.display_name
+        if self.team_tag:
+            self.tag_and_name = f"[{self.team_tag}] {self.display_name}"
 
         #: The racer's membership (gold, basic).
         self.membership: str = data["membership"]
@@ -263,9 +294,6 @@ class Racer:
 
         #: The racer's amount of races.
         self.races: int = data["racesPlayed"]
-
-        #: The racer's team tag. ``None`` if the racer has no team.
-        self.team_tag: Optional[str] = data["tag"]
 
         #: The racer's average speed.
         self.average_speed: int = data["avgSpeed"]
@@ -326,6 +354,7 @@ class Team:
         "tag",
         "name",
         "url",
+        "tag_and_name",
         "open",
         "created",
         "profile_views",
@@ -366,6 +395,8 @@ class Team:
         self.name: str = info["name"]
         #: The team's profile url.
         self.url: str = f"https://nitrotype.com/racer/{self.tag}"
+        #: The team's tag and name.
+        self.tag_and_name = f"[{self.tag}] {self.name}"
 
         #: Whether the team allows new members.
         self.open: bool = info["enrollment"] == "open"
@@ -490,7 +521,19 @@ class Team:
 
 
 class Session:
-    """First-class interface for making HTTP requests to Nitro Type."""
+    """
+    First-class interface for making HTTP requests to Nitro Type.
+
+    :param rate: The number of tokens available per :attr:`asyncnt.Session.limit_for` seconds. Defaults to 10.
+    :type rate: int
+    :param limit_for: The length of the rate limit in seconds. If 0, there is no rate limit. Defaults to 1.
+    :type limit_for: Union[float, int]
+    :param cache_for: The amount of time in seconds to cache results for. If 0, results will not be cached. Defaults to 300.
+    :type cache_for: Union[float, int]
+    :param cache_maxsize: The maximum size of the cache. If 0, results will not be cached. Defaults to 128.
+    :type cache_maxsize: int
+    :raises asyncnt.InvalidArgument: One of the arguments provided is invalid.
+    """
 
     __slots__ = [
         "_loop",
@@ -499,15 +542,23 @@ class Session:
         "_ratelimit",
     ]
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        rate: int = 10,
+        limit_for: Union[float, int] = 1,
+        cache_for: Union[float, int] = 300,
+        cache_maxsize: int = 128,
+    ) -> None:
+
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36",
         }
 
         self._loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
-        self._cache: _Cache = _Cache()
+        self._cache: _Cache = _Cache(cache_for, cache_maxsize)
         self._session: aiohttp.ClientSession = aiohttp.ClientSession(headers=headers)
-        self._ratelimit: _RateLimit = _RateLimit()
+        self._ratelimit: _RateLimit = _RateLimit(rate, limit_for)
 
     def __del__(self) -> None:
         if not self._session.closed:
@@ -524,97 +575,6 @@ class Session:
     ) -> None:
 
         await self._session.close()
-
-    @property
-    def rate(self) -> int:
-        """The number of tokens available per :attr:`asyncnt.Session.limit_for` seconds. Defaults to 10."""
-
-        return self._ratelimit.rate
-
-    @property
-    def limit_for(self) -> Union[float, int]:
-        """The length of the rate limit in seconds. Defaults to 1."""
-
-        return self._ratelimit.per
-
-    def set_rate_limit(self, rate: int = 10, limit_for: Union[float, int] = 1) -> None:
-        """
-        Set the length of the rate limit in seconds and the number of tokens available within that time period. Defaults to 10 and 1 respectively.
-
-        :param rate: The amount of tokens.
-        :type rate: int
-        :param limit_for: The length of the rate limit.
-        :type limit_for: Union[float, int]
-        :raise asyncnt.InvalidArgument: One of the values provided is invalid.
-        """
-
-        error_message = "an int greater than 0"
-        if not isinstance(rate, int):
-            raise InvalidArgument("rate", error_message)
-        if rate <= 0:
-            raise InvalidArgument("rate", error_message)
-
-        self._ratelimit.rate = rate
-
-        error_message = "a float or int greater or equal to 0"
-        if not isinstance(limit_for, (int, float)):
-            raise InvalidArgument("limit_for", error_message)
-        if limit_for < 0:
-            raise InvalidArgument("limit_for", error_message)
-
-        self._ratelimit.per = limit_for
-
-    @property
-    def cache_for(self) -> Union[float, int]:
-        """The amount of time in seconds to cache results for. Defaults to 300."""
-
-        return self._cache.cache_for
-
-    def set_cache_for(self, seconds: Union[float, int] = 300) -> None:
-        """
-        Set the amount of time in seconds to cache results. If the value is 0, results will not be cached. Defaults to 300.
-
-        :param seconds: The amount of seconds to cache results for.
-        :type seconds: Union[float, int]
-        :raise asyncnt.InvalidArgument: The value provided is invalid.
-        """
-
-        error_message = "a float or int greater or equal to 0"
-
-        if not isinstance(seconds, (int, float)):
-            raise InvalidArgument("cache_for", error_message)
-        if seconds < 0:
-            raise InvalidArgument("cache_for", error_message)
-
-        if seconds == 0:
-            self._cache.clear()
-        self._cache.cache_for = seconds
-
-    @property
-    def cache_maxsize(self) -> int:
-        """The maximum size of the cache. Defaults to 128."""
-
-        return self._cache.maxsize
-
-    def set_cache_maxsize(self, size: int = 128) -> None:
-        """
-        Set the maximum size of the cache. If the value is 0, results will not be cached. Defaults to 128.
-
-        :param size: The maximum size of the cache.
-        :type size: int
-        :raise asyncnt.InvalidArgument: The value provided is invalid.
-        """
-
-        error_message = "an int greater or equal to 0"
-
-        if not isinstance(size, int):
-            raise InvalidArgument("cache_maxsize", error_message)
-        if size < 0:
-            raise InvalidArgument("cache_maxsize", error_message)
-
-        if size == 0:
-            self._cache.clear()
-        self._cache.maxsize = size
 
     async def get(self, url: str) -> Optional[aiohttp.ClientResponse]:
         """
