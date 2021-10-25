@@ -234,7 +234,7 @@ class Racer:
         "username",
         "display_name",
         "url",
-        "tag_and_name"
+        "tag_and_name",
         "membership",
         "level",
         "experience",
