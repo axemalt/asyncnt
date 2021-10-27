@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.0"
+__version__ = "1.6.1"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -212,7 +212,9 @@ class Car:
         #: The car's name.
         self.name: str = data["name"]
         #: The car's description.
-        self.description: str = data["longDescription"]
+        self.description: Optional[str] = data.get("longDescription")
+        #: The car's price.
+        self.price: int = data["price"]
         #: The car's enter sound.
         self.enter_sound: str = data["enterSound"]
         #: The car's rarity.
