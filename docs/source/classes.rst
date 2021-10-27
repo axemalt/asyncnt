@@ -18,6 +18,8 @@ Racer Class
 
     .. autoattribute:: display_name
 
+    .. autoattribute:: title
+
     .. autoattribute:: url
     
     .. autoattribute:: membership
@@ -35,6 +37,8 @@ Racer Class
     .. autoattribute:: nitros_total
     
     .. autoattribute:: races
+
+    .. autoattribute:: longest_session
     
     .. autoattribute:: team_tag
     
@@ -73,6 +77,8 @@ Team Class
     .. autoattribute:: tag
 
     .. autoattribute:: name
+
+    .. autoattribute:: color
 
     .. autoattribute:: url
 

@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.1"
+__version__ = "1.6.2"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -250,6 +250,7 @@ class Racer:
         "id",
         "username",
         "display_name",
+        "title",
         "url",
         "tag_and_name",
         "membership",
@@ -260,6 +261,7 @@ class Racer:
         "nitros_used",
         "nitros_total",
         "races",
+        "longest_session",
         "team_tag",
         "average_speed",
         "high_speed",
@@ -287,6 +289,8 @@ class Racer:
         self.username: str = data["username"]
         #: The racer's display name.
         self.display_name: str = data["displayName"] or self.username
+        #: The racer's current title.
+        self.title: str = data["title"]
         #: The racer's profile url.
         self.url: str = f"https://nitrotype.com/racer/{self.username}"
         #: The racer's team tag. ``None`` if the racer has no team.
@@ -314,6 +318,8 @@ class Racer:
 
         #: The racer's amount of races.
         self.races: int = data["racesPlayed"]
+        #: The racer's longest session.
+        self.longest_session: int = data["longestSession"]
 
         #: The racer's average speed.
         self.average_speed: int = data["avgSpeed"]
@@ -403,6 +409,7 @@ class Team:
         "id",
         "tag",
         "name",
+        "color",
         "url",
         "tag_and_name",
         "open",
@@ -443,6 +450,8 @@ class Team:
         self.tag: str = info["tag"]
         #: The team's name.
         self.name: str = info["name"]
+        #: The team's color as a hex.
+        self.color: str = info["tagColor"]
         #: The team's profile url.
         self.url: str = f"https://nitrotype.com/racer/{self.tag}"
         #: The team's tag and name.
