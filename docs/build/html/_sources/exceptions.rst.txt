@@ -7,6 +7,9 @@ Exceptions
 .. autoclass:: asyncnt.InvalidArgument
     :members:
 
+.. autoclass:: asyncnt.InvalidID
+    :members:
+
 .. autoclass:: asyncnt.InvalidRacerUsername
     :members:
 

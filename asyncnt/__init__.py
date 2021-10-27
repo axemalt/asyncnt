@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.5.0"
+__version__ = "1.6.0"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -68,6 +68,14 @@ class InvalidTeamTag(AsyncNTException):
 
     def __init__(self) -> None:
         message = "The tag provided is invalid."
+        super().__init__(message)
+
+
+class InvalidID(AsyncNTException):
+    """Exception that is raised when the ID provided is invalid."""
+
+    def __init__(self) -> None:
+        message = "The ID provided is invalid."
         super().__init__(message)
 
 
@@ -194,26 +202,29 @@ class _RateLimit:
 class Car:
     """Represents a Nitro Type car."""
 
-    __slots__ = ["id", "hue_angle", "url"]
+    __slots__ = ["id", "name", "description", "rarity", "url", "price", "enter_sound"]
 
     def __init__(self, data):
-        #: The car's id.
-        self.id: int = data[0]
-        #: The car's hue angle.
-        self.hue_angle: int = data[2]
-        #: The car's image url.
-        self.url: str = ""
+        options = data["options"]
 
-        if self.hue_angle == 0:
-            self.url = f"https://www.nitrotype.com/cars/{self.id}_large_1.png"
-        else:
-            self.url = f"https://www.nitrotype.com/cars/painted/{self.id}_large_1_{self.hue_angle}.png"
+        #: The car's id.
+        self.id: int = data["carID"]
+        #: The car's name.
+        self.name: str = data["name"]
+        #: The car's description.
+        self.description: str = data["longDescription"]
+        #: The car's enter sound.
+        self.enter_sound: str = data["enterSound"]
+        #: The car's rarity.
+        self.rarity: str = options["rarity"]
+        #: The car's image url.
+        self.url: str = options["largeSrc"]
 
 
 class Loot:
     """Represents a Nitro Type loot."""
 
-    __slots__ = ["id", "type", "name", "rarity"]
+    __slots__ = ["id", "type", "name", "description", "rarity", "price"]
 
     def __init__(self, data):
         #: The loot's ID.
@@ -222,8 +233,12 @@ class Loot:
         self.type: str = data["type"]
         #: The loot's name.
         self.name: str = data["name"]
+        #: The loot's price.
+        self.price: Optional[int] = data.get("price")
         #: The loot's rarity.
-        self.rarity: str = data["options"]["rarity"]
+        self.rarity = None
+        if data.get("options") is not None:
+            self.rarity: str = data["options"]["rarity"]
 
 
 class Racer:
@@ -249,17 +264,20 @@ class Racer:
         "friend_reqs_allowed",
         "looking_for_team",
         "created",
-        "car",
-        "cars",
         "cars_owned",
         "cars_sold",
         "cars_total",
-        "loot",
         "_scraper",
+        "_car_id",
+        "_car_ids",
+        "_loot_ids",
     ]
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
         self._scraper = scraper
+        self._car_id = data["carID"]
+        self._car_ids: List[Car] = []
+        self._loot_ids: List[Optional[Loot]] = []
 
         #: The racer's user ID.
         self.id: int = data["userID"]
@@ -308,33 +326,63 @@ class Racer:
         #: The racer's creation time.
         self.created: int = data["createdStamp"]
 
-        #: The racer's current car.
-        self.car: Car = Car([data["carID"], "owned", data["carHueAngle"]])
-
         #: The racer's amount of owned cars.
         self.cars_owned: int = 0
         #: The racer's amount of sold cars.
         self.cars_sold: int = 0
         #: The racer's amount of owned and sold cars.
         self.cars_total: int = 0
-        #: The racer's cars.
-        self.cars: List[Car] = []
         for car in data["cars"]:
             if car[1] == "owned":
-                self.cars.append(Car(car))
+                self._car_ids.append(car[0])
                 self.cars_owned += 1
             elif car[1] == "sold":
                 self.cars_sold += 1
             self.cars_total += 1
 
-        #: The racer's loot.
-        self.loot: List[Optional[Loot]] = []
         for loot in data["loot"]:
-            self.loot.append(Loot(loot))
+            self._loot_ids.append(loot["lootID"])
+
+    async def get_car(self) -> Car:
+        """
+        Returns the racer's equipped car.
+
+        :raise asyncnt.HTTPException: Getting the car failed.
+        :return: The racer's equipped car.
+        :rtype: asyncnt.Car
+        """
+
+        return await self._scraper.get_car(self._car_id)
+
+    async def get_cars(self) -> List[Car]:
+        """
+        Returns the racer's cars.
+
+        :raise asyncnt.HTTPException: Getting the cars failed.
+        :return: The racer's cars.
+        :rtype: List[asyncnt.Car]
+        """
+
+        return await asyncio.gather(
+            *[self._scraper.get_car(id) for id in self._car_ids]
+        )
+
+    async def get_loot(self) -> List[Loot]:
+        """
+        Returns the racer's loot.
+
+        :raise asyncnt.HTTPException: Getting the loot failed.
+        :return: The racer's loot.
+        :rtype: List[asyncnt.Loot]
+        """
+
+        return await asyncio.gather(
+            *[self._scraper.get_loot(id) for id in self._loot_ids]
+        )
 
     async def get_team(self) -> Optional[Team]:
         """
-        Return the team the racer is on.
+        Returns the team the racer is on.
 
         :raise asyncnt.HTTPException: Getting the team failed.
         :return: The racer's team. ``None`` if the racer has no team.
@@ -600,6 +648,20 @@ class Session:
         else:
             raise HTTPException(response)
 
+    async def get_boostrap(self) -> aiohttp.ClientResponse:
+        """
+        A shortcut to getting data from the bootstrap.
+
+        :raise asyncnt.HTTPException: Getting the data failed.
+        :return: The boostrap data.
+        :rtype: aiohttp.ClientResponse
+        """
+
+        raw_data: aiohttp.ClientResponse = await self.get(
+            "https://www.nitrotype.com/index/d8dad03537419610ef21782a075dde2d94c465c61266-1266/bootstrap.js"
+        )
+        return raw_data
+
     async def get_racer(self, username: str) -> Optional[Racer]:
         """
         Get a racer with a username.
@@ -646,3 +708,52 @@ class Session:
             raise InvalidTeamTag
 
         return Team(data["data"], scraper=self)
+
+    async def get_car(self, id: int) -> Optional[Car]:
+        """
+        Get a car with an ID.
+
+        :param id: The car's ID.
+        :type id: int
+        :raise asyncnt.InvalidID: The ID given is invalid.
+        :raise asyncnt.HTTPException: Getting the car failed.
+        :return: The car with the given ID.
+        :rtype: Optional[asyncnt.Car]
+        """
+
+        raw_data = await self.get_boostrap()
+        text = await raw_data.text()
+
+        regex_result: str = re.search(
+            r"\"CARS\",(\[.*\])\],\[\"PRODUCTS\"", text
+        ).group(1)
+        car_data = json.loads('{"cars": ' + regex_result + "}")
+
+        for car in car_data["cars"]:
+            if car["carID"] == id:
+                return Car(car)
+
+        raise InvalidID
+
+    async def get_loot(self, id: int) -> Optional[Loot]:
+        """
+        Get loot with an ID.
+        :param id: The loot's ID.
+        :type id: int
+        :raise asyncnt.InvalidLootID: The ID given is invalid.
+        :raise asyncnt.HTTPException: Getting the loot failed.
+        :return: The loot with the given ID.
+        :rtype: Optional[asyncnt.Loot]
+        """
+
+        raw_data = await self.get_boostrap()
+        text = await raw_data.text()
+
+        regex_result: str = re.search(r"\"LOOT\",(\[.*\])\],\[\"SHOP\"", text).group(1)
+        loot_data = json.loads('{"loot": ' + regex_result + "}")
+
+        for loot in loot_data["loot"]:
+            if loot["lootID"] == id:
+                return Loot(loot)
+
+        raise InvalidID

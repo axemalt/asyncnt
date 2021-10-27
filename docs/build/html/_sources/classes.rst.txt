@@ -48,19 +48,20 @@ Racer Class
     
     .. autoattribute:: created
     
-    .. autoattribute:: car
-    
     .. autoattribute:: cars_owned
     
     .. autoattribute:: cars_sold
     
     .. autoattribute:: cars_total
     
-    .. autoattribute:: cars
-    
-    .. autoattribute:: loot
+    .. autofunction:: asyncnt.Racer.get_car
+
+    .. autofunction:: asyncnt.Racer.get_cars
+
+    .. autofunction:: asyncnt.Racer.get_loot
 
     .. autofunction:: asyncnt.Racer.get_team
+
 
 Team Class
 ----------
