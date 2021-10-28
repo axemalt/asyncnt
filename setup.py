@@ -1,6 +1,10 @@
 from setuptools import setup
 import re
 
+requirements = []
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 version = ''
 with open('asyncnt/__init__.py') as f:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
@@ -24,7 +28,7 @@ setup(name='asyncnt',
     package_data={'asyncnt': ['py.typed']},
     license='MIT',
     description='An asynchronous way to fetch data from nitrotype.',
-    install_requires=['aiohttp'],
+    install_requires=requirements,
     long_description=readme,
     classifiers=[
         "Programming Language :: Python :: 3",
