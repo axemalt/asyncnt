@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.2"
+__version__ = "1.6.3"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -103,18 +103,6 @@ class _Cache:
     ]
 
     def __init__(self, cache_for: Union[float, int], maxsize: int = 128) -> None:
-        error_message = "a float or int greater or equal to 0"
-        if not isinstance(cache_for, (int, float)):
-            raise InvalidArgument("cache_for", error_message)
-        if cache_for < 0:
-            raise InvalidArgument("cache_for", error_message)
-
-        error_message = "an int greater or equal to 0"
-        if not isinstance(maxsize, int):
-            raise InvalidArgument("cache_maxsize", error_message)
-        if maxsize < 0:
-            raise InvalidArgument("cache_maxsize", error_message)
-
         self.cache: OrderedDict[str, aiohttp.ClientResponse] = OrderedDict()
         self.maxsize: int = cache_for
         self.cache_for: float = maxsize
@@ -160,18 +148,6 @@ class _RateLimit:
     ]
 
     def __init__(self, rate: int = 10, per: Union[float, int] = 1) -> None:
-        error_message = "an int greater than 0"
-        if not isinstance(rate, int):
-            raise InvalidArgument("rate", error_message)
-        if rate <= 0:
-            raise InvalidArgument("rate", error_message)
-
-        error_message = "a float or int greater or equal to 0"
-        if not isinstance(per, (int, float)):
-            raise InvalidArgument("limit_for", error_message)
-        if per < 0:
-            raise InvalidArgument("limit_for", error_message)
-
         self.lock = asyncio.Lock()
         self.rate: int = rate
         self.per: float = per
@@ -202,15 +178,26 @@ class _RateLimit:
 class Car:
     """Represents a Nitro Type car."""
 
-    __slots__ = ["id", "name", "description", "rarity", "url", "price", "enter_sound"]
+    __slots__ = [
+        "id",
+        "name",
+        "hue_angle",
+        "description",
+        "rarity",
+        "url",
+        "price",
+        "enter_sound",
+    ]
 
-    def __init__(self, data: Dict) -> None:
+    def __init__(self, data: Dict, hue_angle: Optional[int] = None) -> None:
         options = data["options"]
 
         #: The car's id.
         self.id: int = data["carID"]
         #: The car's name.
         self.name: str = data["name"]
+        #: The car's hue angle.
+        self.hue_angle: int = hue_angle or 0
         #: The car's description.
         self.description: Optional[str] = data.get("longDescription")
         #: The car's price.
@@ -220,7 +207,10 @@ class Car:
         #: The car's rarity.
         self.rarity: str = options["rarity"]
         #: The car's image url.
-        self.url: str = options["largeSrc"]
+        self.url: str = f"https://nitrotype.com/cars/{options['largeSrc']}"
+        if hue_angle is not None:
+            src: str = f"{options['largeSrc'][:-4]}_{hue_angle}.png"
+            self.url: str = f"https://nitrotype.com/cars/painted/{src}"
 
 
 class Loot:
@@ -272,16 +262,22 @@ class Racer:
         "cars_sold",
         "cars_total",
         "_scraper",
-        "_car_id",
-        "_car_ids",
-        "_loot_ids",
+        "_car",
+        "_cars",
+        "_loot",
+        "_team",
     ]
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
-        self._scraper = scraper
-        self._car_id = data["carID"]
-        self._car_ids: List[Car] = []
-        self._loot_ids: List[Optional[Loot]] = []
+        self._scraper: Session = scraper
+        self._car: Dict = {"id": data["carID"], "hue_angle": data["carHueAngle"]}
+        self._cars: List[Dict] = []
+        self._loot: List[Dict] = []
+        self._team: Dict = {
+            "id": data["teamID"],
+            "tag": data["tag"],
+            "color": data["tagColor"],
+        }
 
         #: The racer's user ID.
         self.id: int = data["userID"]
@@ -342,14 +338,45 @@ class Racer:
         self.cars_total: int = 0
         for car in data["cars"]:
             if car[1] == "owned":
-                self._car_ids.append(car[0])
+                raw_car = {"id": car[0], "hue_angle": car[2]}
+                self._cars.append(raw_car)
                 self.cars_owned += 1
             elif car[1] == "sold":
                 self.cars_sold += 1
             self.cars_total += 1
 
         for loot in data["loot"]:
-            self._loot_ids.append(loot["lootID"])
+            raw_loot = {
+                "id": loot["lootID"],
+                "type": loot["type"],
+                "name": loot["name"],
+                "rarity": loot["options"]["rarity"],
+            }
+            self._loot.append(raw_loot)
+
+    @property
+    def raw_car(self) -> Dict:
+        """The racer's current car. Note that this gives less information than :py:func:`asyncnt.Racer.get_car`."""
+
+        return self._car
+
+    @property
+    def raw_cars(self) -> List[Dict]:
+        """The racer's cars. Note that this gives less information than :py:func:`asyncnt.Racer.get_cars`."""
+
+        return self._cars
+
+    @property
+    def raw_loot(self) -> List[Dict]:
+        """The racer's loot. Note that this gives less information than :py:func:`asyncnt.Racer.get_loot`."""
+
+        return self._loot
+
+    @property
+    def raw_team(self) -> Dict:
+        """The racer's team. Note that this gives less information than :py:func:`asyncnt.Racer.get_team`."""
+
+        return self._team
 
     async def get_car(self) -> Car:
         """
@@ -360,7 +387,9 @@ class Racer:
         :rtype: asyncnt.Car
         """
 
-        return await self._scraper.get_car(self._car_id)
+        return await self._scraper.get_car(
+            self._car["id"], hue_angle=self._car["hue_angle"]
+        )
 
     async def get_cars(self) -> List[Car]:
         """
@@ -372,7 +401,10 @@ class Racer:
         """
 
         return await asyncio.gather(
-            *[self._scraper.get_car(id) for id in self._car_ids]
+            *[
+                self._scraper.get_car(car["id"], hue_angle=car["hue_angle"])
+                for car in self._cars
+            ]
         )
 
     async def get_loot(self) -> List[Loot]:
@@ -385,7 +417,7 @@ class Racer:
         """
 
         return await asyncio.gather(
-            *[self._scraper.get_loot(id) for id in self._loot_ids]
+            *[self._scraper.get_loot(loot["id"]) for loot in self._loot]
         )
 
     async def get_team(self) -> Optional[Team]:
@@ -433,16 +465,19 @@ class Team:
         "all_time_races",
         "all_time_points",
         "_scraper",
-        "_captain_username",
-        "_leader_usernames",
-        "_member_usernames",
+        "_captain",
+        "_leaders",
+        "_members",
     ]
 
     def __init__(self, data: Dict, *, scraper: Session) -> None:
-        self._scraper = scraper
-
         info: Dict = data["info"]
         stats: Dict = data["stats"]
+
+        self._scraper: Session = scraper
+        self._captain: Dict = {}
+        self._leaders: List[Dict] = []
+        self._members: List[Dict] = []
 
         #: The team's ID.
         self.id: int = info["teamID"]
@@ -477,13 +512,20 @@ class Team:
         #: The team's description.
         self.description: str = info["otherRequirements"]
 
-        self._captain_username: str = info["username"]
-        self._leader_usernames: List[str] = []
-        self._member_usernames: List[str] = []
         for member in data["members"]:
-            self._member_usernames.append(member["username"])
+            raw_member = {
+                "id": member["userID"],
+                "username": member["username"],
+                "displayName": member["displayName"] or member["username"],
+                "membership": member["membership"],
+                "races": member["racesPlayed"],
+                "raw_car": {"id": member["carID"], "hue_angle": member["carHueAngle"]},
+            }
+            self._members.append(raw_member)
             if member["role"] == "officer":
-                self._leader_usernames.append(member["username"])
+                self._leaders.append(raw_member)
+            if member["username"] == info["username"]:
+                self._captain = raw_member
 
         for stat in stats:
             board: str = stat["board"]
@@ -519,6 +561,24 @@ class Team:
                 #: The team's all time points.
                 self.all_time_points: float = races * (100 + speed / 2) * accuracy / 100
 
+    @property
+    def raw_captain(self) -> Dict:
+        """The team's captain. Note that this gives less information than :py:func:`asyncnt.Team.get_captain`."""
+
+        return self._captain
+
+    @property
+    def raw_leaders(self) -> List[Dict]:
+        """The team's leaders. Note that this gives less information than :py:func:`asyncnt.Team.get_leaders`."""
+
+        return self._leaders
+
+    @property
+    def raw_members(self) -> List[Dict]:
+        """The team's members. Note that this gives less information than :py:func:`asyncnt.Team.get_members`."""
+
+        return self._members
+
     async def get_captain(self) -> Racer:
         """
         Return the captain of the team.
@@ -528,7 +588,7 @@ class Team:
         :rtype: asyncnt.Racer
         """
 
-        return await self._scraper.get_racer(self._captain_username)
+        return await self._scraper.get_racer(self._captain["username"])
 
     async def get_leaders(
         self, *, include_captain: bool = False
@@ -546,11 +606,11 @@ class Team:
 
         coruntines = []
 
-        for username in self._leader_usernames:
-            if username == self._captain_username and not include_captain:
+        for leader in self._leaders:
+            if leader["username"] == self._captain["username"] and not include_captain:
                 pass
             else:
-                coruntines.append(self._scraper.get_racer(username))
+                coruntines.append(self._scraper.get_racer(leader["username"]))
 
         return await asyncio.gather(*coruntines)
 
@@ -568,13 +628,14 @@ class Team:
         :rtype: List[Optional[asyncnt.Racer]]
         """
 
-        coruntines = []
+        coruntines: List = []
+        leader_usernames: List[str] = [leader["username"] for leader in self._leaders]
 
-        for username in self._member_usernames:
-            if username in self._leader_usernames and not include_leaders:
+        for member in self._members:
+            if member["username"] in leader_usernames and not include_leaders:
                 pass
             else:
-                coruntines.append(self._scraper.get_racer(username))
+                coruntines.append(self._scraper.get_racer(member["username"]))
 
         return await asyncio.gather(*coruntines)
 
@@ -609,6 +670,30 @@ class Session:
         cache_for: Union[float, int] = 300,
         cache_maxsize: int = 128,
     ) -> None:
+
+        error_message = "a float or int greater or equal to 0"
+        if not isinstance(cache_for, (int, float)):
+            raise InvalidArgument("cache_for", error_message)
+        if cache_for < 0:
+            raise InvalidArgument("cache_for", error_message)
+
+        error_message = "an int greater or equal to 0"
+        if not isinstance(cache_maxsize, int):
+            raise InvalidArgument("cache_maxsize", error_message)
+        if cache_maxsize < 0:
+            raise InvalidArgument("cache_maxsize", error_message)
+
+        error_message = "an int greater than 0"
+        if not isinstance(rate, int):
+            raise InvalidArgument("rate", error_message)
+        if rate <= 0:
+            raise InvalidArgument("rate", error_message)
+
+        error_message = "a float or int greater or equal to 0"
+        if not isinstance(limit_for, (int, float)):
+            raise InvalidArgument("limit_for", error_message)
+        if limit_for < 0:
+            raise InvalidArgument("limit_for", error_message)
 
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36",
@@ -720,17 +805,26 @@ class Session:
 
         return Team(data["data"], scraper=self)
 
-    async def get_car(self, id: int) -> Optional[Car]:
+    async def get_car(
+        self, id: int, *, hue_angle: Optional[int] = None
+    ) -> Optional[Car]:
+
         """
         Get a car with an ID.
 
         :param id: The car's ID.
         :type id: int
+        :param hue_angle: The car's hue angle. Defaults to None.
+        :type hue_angle: Optional[int]
         :raise asyncnt.InvalidID: The ID given is invalid.
         :raise asyncnt.HTTPException: Getting the car failed.
         :return: The car with the given ID.
         :rtype: Optional[asyncnt.Car]
         """
+
+        if hue_angle is not None:
+            if not isinstance(hue_angle, int) or hue_angle <= 0:
+                raise InvalidArgument("hue_angle", "an int greater than 0")
 
         raw_data = await self.get_boostrap()
         text = await raw_data.text()
@@ -742,7 +836,7 @@ class Session:
 
         for car in car_data["cars"]:
             if car["carID"] == id:
-                return Car(car)
+                return Car(car, hue_angle)
 
         raise InvalidID
 

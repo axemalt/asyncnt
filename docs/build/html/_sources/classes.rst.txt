@@ -57,6 +57,14 @@ Racer Class
     .. autoattribute:: cars_sold
     
     .. autoattribute:: cars_total
+
+    .. autoproperty:: raw_car
+
+    .. autoproperty:: raw_cars
+
+    .. autoproperty:: raw_loot
+    
+    .. autoproperty:: raw_team
     
     .. autofunction:: asyncnt.Racer.get_car
 
@@ -121,6 +129,12 @@ Team Class
     .. autoattribute:: all_time_accuracy
 
     .. autoattribute:: all_time_points
+
+    .. autoproperty:: raw_captain
+
+    .. autoproperty:: raw_leaders
+
+    .. autoproperty:: raw_members
 
     .. autofunction:: asyncnt.Team.get_captain
 
