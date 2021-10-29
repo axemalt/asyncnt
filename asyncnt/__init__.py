@@ -204,7 +204,7 @@ class Car:
 
     __slots__ = ["id", "name", "description", "rarity", "url", "price", "enter_sound"]
 
-    def __init__(self, data):
+    def __init__(self, data: Dict) -> None:
         options = data["options"]
 
         #: The car's id.
@@ -228,7 +228,7 @@ class Loot:
 
     __slots__ = ["id", "type", "name", "description", "rarity", "price"]
 
-    def __init__(self, data):
+    def __init__(self, data: Dict) -> None:
         #: The loot's ID.
         self.id: int = data["lootID"]
         #: The loot's type.
