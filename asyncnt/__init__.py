@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.10"
+__version__ = "1.6.11"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -488,7 +488,7 @@ class Team:
         #: The team's color as a hex.
         self.color: str = info["tagColor"]
         #: The team's profile url.
-        self.url: str = f"https://nitrotype.com/racer/{self.tag}"
+        self.url: str = f"https://nitrotype.com/team/{self.tag}"
         #: The team's tag and name.
         self.tag_and_name = f"[{self.tag}] {self.name}"
 
