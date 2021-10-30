@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.8"
+__version__ = "1.6.9"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -531,7 +531,7 @@ class Team:
             board: str = stat["board"]
             races: int = stat["played"]
             speed: float = int(stat["typed"]) / 5 / stat["secs"] * 60
-            accuracy: float = 100 - int(stat["errs"] / int(stat["typed"])) * 100
+            accuracy: float = 100 - stat["errs"] / stat["typed"] * 100
 
             if board == "daily":
                 #: The team's daily races.
