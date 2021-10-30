@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.5"
+__version__ = "1.6.6"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -290,7 +290,7 @@ class Racer:
         #: The racer's profile url.
         self.url: str = f"https://nitrotype.com/racer/{self.username}"
         #: The racer's team tag. ``None`` if the racer has no team.
-        self.team_tag: Optional[str] = data["tag"]
+        self.team_tag: Optional[str] = data.get("tag")
         #: The racer's tag and name. If the racer has no team, this is the same as the display name.
         self.tag_and_name = self.display_name
         if self.team_tag:
