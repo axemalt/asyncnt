@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.7"
+__version__ = "1.6.8"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -516,7 +516,7 @@ class Team:
             raw_member = {
                 "id": member["userID"],
                 "username": member["username"],
-                "displayName": member["displayName"] or member["username"],
+                "display_name": member["displayName"] or member["username"],
                 "membership": member["membership"],
                 "races": member["racesPlayed"],
                 "raw_car": {"id": member["carID"], "hue_angle": member["carHueAngle"]},
