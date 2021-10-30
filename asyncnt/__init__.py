@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.4"
+__version__ = "1.6.5"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -274,9 +274,9 @@ class Racer:
         self._cars: List[Dict] = []
         self._loot: List[Dict] = []
         self._team: Dict = {
-            "id": data["teamID"],
-            "tag": data["tag"],
-            "color": data["tagColor"],
+            "id": data.get("teamID"),
+            "tag": data.get("tag"),
+            "color": data.get("tagColor"),
         }
 
         #: The racer's user ID.
