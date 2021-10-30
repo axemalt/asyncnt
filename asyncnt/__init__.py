@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.9"
+__version__ = "1.6.10"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -795,13 +795,16 @@ class Session:
         :rtype: Optional[asyncnt.Team]
         """
 
-        raw_data: aiohttp.ClientResponse = await self.get(
-            f"https://nitrotype.com/api/teams/{tag}/"
-        )
-        data: Dict = await raw_data.json()
+        try:
+            raw_data: aiohttp.ClientResponse = await self.get(
+                f"https://nitrotype.com/api/teams/{tag}/"
+            )
+        except HTTPException as error:
+            if error.status == 400:
+                raise InvalidTeamTag
+            raise error
 
-        if not data["data"].get("info"):
-            raise InvalidTeamTag
+        data: Dict = await raw_data.json()
 
         return Team(data["data"], scraper=self)
 
