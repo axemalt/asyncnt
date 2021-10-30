@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.6"
+__version__ = "1.6.7"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -817,14 +817,17 @@ class Session:
         :param hue_angle: The car's hue angle. Defaults to None.
         :type hue_angle: Optional[int]
         :raise asyncnt.InvalidID: The ID given is invalid.
+        :raise asyncnt.InvalidArgument: The hue angle provided is invalid.
         :raise asyncnt.HTTPException: Getting the car failed.
         :return: The car with the given ID.
         :rtype: Optional[asyncnt.Car]
         """
 
         if hue_angle is not None:
-            if not isinstance(hue_angle, int) or hue_angle <= 0:
-                raise InvalidArgument("hue_angle", "an int greater than 0")
+            if not isinstance(hue_angle, int) or hue_angle < 0 or hue_angle % 10 != 0:
+                raise InvalidArgument(
+                    "hue_angle", "an int factor of 10 between 0 and 350, inclusive"
+                )
 
         raw_data = await self.get_boostrap()
         text = await raw_data.text()
