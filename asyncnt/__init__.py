@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __title__ = "asyncnt"
 __author__ = "axemalt"
-__version__ = "1.6.11"
+__version__ = "1.7.0"
 
 
 from typing import Optional, Union, Type, List, Dict
@@ -699,14 +699,13 @@ class Session:
             "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36",
         }
 
-        self._loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
         self._cache: _Cache = _Cache(cache_for, cache_maxsize)
         self._session: aiohttp.ClientSession = aiohttp.ClientSession(headers=headers)
         self._ratelimit: _RateLimit = _RateLimit(rate, limit_for)
 
     def __del__(self) -> None:
         if not self._session.closed:
-            self._loop.create_task(self._session.close())
+            asyncio.create_task(self._session.close())
 
     async def __aenter__(self) -> Session:
         return self
