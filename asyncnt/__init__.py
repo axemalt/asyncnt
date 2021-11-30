@@ -41,6 +41,10 @@ import time
 import re
 
 
+NITROTYPE_URL = "https://nitrotype.com/"
+API_BASE = f"{NITROTYPE_URL}api/"
+
+
 class AsyncNTException(Exception):
     """Base exception class for asyncnt."""
 
@@ -207,10 +211,10 @@ class Car:
         #: The car's rarity.
         self.rarity: str = options["rarity"]
         #: The car's image url.
-        self.url: str = f"https://nitrotype.com/cars/{options['largeSrc']}"
+        self.url: str = f"{NITROTYPE_URL}cars/{options['largeSrc']}"
         if hue_angle is not None:
             src: str = f"{options['largeSrc'][:-4]}_{hue_angle}.png"
-            self.url: str = f"https://nitrotype.com/cars/painted/{src}"
+            self.url: str = f"{NITROTYPE_URL}cars/painted/{src}"
 
 
 class Loot:
@@ -288,7 +292,7 @@ class Racer:
         #: The racer's current title.
         self.title: str = data["title"]
         #: The racer's profile url.
-        self.url: str = f"https://nitrotype.com/racer/{self.username}"
+        self.url: str = f"{NITROTYPE_URL}racer/{self.username}"
         #: The racer's team tag. ``None`` if the racer has no team.
         self.team_tag: Optional[str] = data.get("tag")
         #: The racer's tag and name. If the racer has no team, this is the same as the display name.
@@ -488,7 +492,7 @@ class Team:
         #: The team's color as a hex.
         self.color: str = info["tagColor"]
         #: The team's profile url.
-        self.url: str = f"https://nitrotype.com/team/{self.tag}"
+        self.url: str = f"{NITROTYPE_URL}team/{self.tag}"
         #: The team's tag and name.
         self.tag_and_name = f"[{self.tag}] {self.name}"
 
@@ -640,6 +644,19 @@ class Team:
         return await asyncio.gather(*coruntines)
 
 
+class RankedTeam(Team):
+    """A Nitro Type team, but with a ``rank`` attribute. Inherits from :py:class:asyncnt.Team"""
+
+    __slots__ = ("rank", "time_period")
+
+    def __init__(self, data, rank, time_period, scraper):
+        super().__init__(data, scraper=scraper)
+        #: The team's rank for the given time period.
+        self.rank: int = rank
+        #: The time period that the rank corresponds to.
+        self.time_period: str = time_period
+
+
 class Session:
     """
     First-class interface for making HTTP requests to Nitro Type.
@@ -753,7 +770,7 @@ class Session:
         """
 
         raw_data: aiohttp.ClientResponse = await self.get(
-            "https://www.nitrotype.com/index/d8dad03537419610ef21782a075dde2d94c465c61266-1266/bootstrap.js"
+            f"{NITROTYPE_URL}index/d8dad03537419610ef21782a075dde2d94c465c61266-1266/bootstrap.js"
         )
         return raw_data
 
@@ -770,7 +787,7 @@ class Session:
         """
 
         raw_data: aiohttp.ClientResponse = await self.get(
-            f"https://nitrotype.com/racer/{username}/"
+            f"{NITROTYPE_URL}racer/{username}/"
         )
         text: str = await raw_data.text()
 
@@ -796,7 +813,7 @@ class Session:
 
         try:
             raw_data: aiohttp.ClientResponse = await self.get(
-                f"https://nitrotype.com/api/teams/{tag}/"
+                f"{API_BASE}teams/{tag}/"
             )
         except HTTPException as error:
             if error.status == 400:
@@ -867,3 +884,70 @@ class Session:
                 return Loot(loot)
 
         raise InvalidID
+
+    async def get_raw_leaderboard(self, time_period: Optional[str] = "weekly", limit: Optional[int] = 100) -> Optional[List[Dict]]:
+        """
+        Get the raw leaderboard.
+
+        :param time_period: The time period for the leaderboard (``weekly``, ``season``). Defaults to ``season``.
+        :type time_period: str
+        :param limit: The amount of teams to include on the leaderboard. Defaults to ``100``.
+        :type limit: int
+        :raise asyncnt.HTTPException: Getting the leaderboard failed.
+        :raise asyncnt.InvalidArgument: An argument provided is invalid.
+        :return: The raw leaderboard.
+        :rtype: Optional[List[Dict]]
+        """
+        time_period = time_period.lower()
+
+        if not isinstance(limit, int) or limit < 1 or limit > 100:
+            raise InvalidArgument(limit, "an integer between 1 and 100, inclusive.")
+        if not time_period in ["weekly", "season"]:
+            raise InvalidArgument("time", "\"weekly\" or \"season\"")
+
+        raw_data: aiohttp.ClientResponse = await self.get(f"{API_BASE}scoreboard?time={time_period}")
+        data: List[Dict] = await raw_data.json()
+        limited_list: List[Dict] = []
+
+        for team in data["data"]["scores"][:limit]:
+            raw_lb_team = {
+                "tag": team["tag"],
+                "id": team["teamID"],
+                "name": team["name"],
+                "color": team["tagColor"],
+                "created": team["createdStamp"],
+                "member_count": team["members"],
+                "rank": team["rank"],
+                "races": team["played"],
+                "points": team["points"],
+                "speed": team["speed"],
+            }
+            limited_list.append(raw_lb_team)
+
+        return limited_list
+
+    async def get_leaderboard(self, time_period: Optional[str] = "weekly", limit: Optional[int] = 100) -> Optional[List[Team]]:
+        """
+        Get the leaderboard as a list of :py:class:asyncnt.RankedTeam objects.
+
+        :param time_period: The time period for the leaderboard (``weekly``, ``season``). Defaults to ``season``.
+        :type time_period: str
+        :param limit: The amount of teams to include on the leaderboard. Defaults to ``100``.
+        :type limit: int
+        :raise asyncnt.HTTPException: Getting the leaderboard failed.
+        :raise asyncnt.InvalidArgument: An argument provided is invalid.
+        :return: The raw leaderboard.
+        :rtype: Optional[List[Dict]]
+        """
+
+        raw_data = await self.get_raw_leaderboard(time_period, limit)
+
+        async def get_object(lb_team_data):
+            if lb_team_data["tag"] == "EMPTY":
+                return lb_team_data
+            
+            raw_team_data = await self.get(f"{API_BASE}teams/{lb_team_data['tag']}")
+            team_data = await raw_team_data.json()
+            return RankedTeam(team_data["data"], lb_team_data["rank"], time_period, self)
+        
+        return await asyncio.gather(*[get_object(team) for team in raw_data])
