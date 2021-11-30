@@ -645,7 +645,7 @@ class Team:
 
 
 class RankedTeam(Team):
-    """A Nitro Type team, but with a ``rank`` attribute. Inherits from :py:class:asyncnt.Team"""
+    """A Nitro Type team, but with a ``rank`` attribute. Inherits from :py:class:`asyncnt.Team`."""
 
     __slots__ = ("rank", "time_period")
 
@@ -812,9 +812,7 @@ class Session:
         """
 
         try:
-            raw_data: aiohttp.ClientResponse = await self.get(
-                f"{API_BASE}teams/{tag}/"
-            )
+            raw_data: aiohttp.ClientResponse = await self.get(f"{API_BASE}teams/{tag}/")
         except HTTPException as error:
             if error.status == 400:
                 raise InvalidTeamTag
@@ -885,7 +883,9 @@ class Session:
 
         raise InvalidID
 
-    async def get_raw_leaderboard(self, time_period: Optional[str] = "weekly", limit: Optional[int] = 100) -> Optional[List[Dict]]:
+    async def get_raw_leaderboard(
+        self, time_period: Optional[str] = "weekly", limit: Optional[int] = 100
+    ) -> Optional[List[Dict]]:
         """
         Get the raw leaderboard.
 
@@ -903,9 +903,11 @@ class Session:
         if not isinstance(limit, int) or limit < 1 or limit > 100:
             raise InvalidArgument(limit, "an integer between 1 and 100, inclusive.")
         if not time_period in ["weekly", "season"]:
-            raise InvalidArgument("time", "\"weekly\" or \"season\"")
+            raise InvalidArgument("time", '"weekly" or "season"')
 
-        raw_data: aiohttp.ClientResponse = await self.get(f"{API_BASE}scoreboard?time={time_period}")
+        raw_data: aiohttp.ClientResponse = await self.get(
+            f"{API_BASE}scoreboard?time={time_period}"
+        )
         data: List[Dict] = await raw_data.json()
         limited_list: List[Dict] = []
 
@@ -926,9 +928,11 @@ class Session:
 
         return limited_list
 
-    async def get_leaderboard(self, time_period: Optional[str] = "weekly", limit: Optional[int] = 100) -> Optional[List[Team]]:
+    async def get_leaderboard(
+        self, time_period: Optional[str] = "weekly", limit: Optional[int] = 100
+    ) -> Optional[List[Team, Dict]]:
         """
-        Get the leaderboard as a list of :py:class:asyncnt.RankedTeam objects.
+        Get the leaderboard as a list of :py:class:asyncnt.RankedTeam objects or dictionaries if the team is deleted.
 
         :param time_period: The time period for the leaderboard (``weekly``, ``season``). Defaults to ``season``.
         :type time_period: str
@@ -945,9 +949,11 @@ class Session:
         async def get_object(lb_team_data):
             if lb_team_data["tag"] == "EMPTY":
                 return lb_team_data
-            
+
             raw_team_data = await self.get(f"{API_BASE}teams/{lb_team_data['tag']}")
             team_data = await raw_team_data.json()
-            return RankedTeam(team_data["data"], lb_team_data["rank"], time_period, self)
-        
+            return RankedTeam(
+                team_data["data"], lb_team_data["rank"], time_period, self
+            )
+
         return await asyncio.gather(*[get_object(team) for team in raw_data])

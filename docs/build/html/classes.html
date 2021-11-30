@@ -43,6 +43,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#session-class">Session Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#racer-class">Racer Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#team-class">Team Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rankedteam-class">RankedTeam Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#car-class">Car Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#loot-class">Loot Class</a></li>
 </ul>
@@ -160,6 +161,32 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="asyncnt.Session.get_leaderboard">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_leaderboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_period</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'weekly'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Team" title="asyncnt.Team"><span class="pre">Team</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_leaderboard" title="Permalink to this definition"></a></dt>
+<dd><p>Get the leaderboard as a list of :py:class:asyncnt.RankedTeam objects or dictionaries if the team is deleted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_period</strong> (<em>str</em>) – The time period for the leaderboard (<code class="docutils literal notranslate"><span class="pre">weekly</span></code>, <code class="docutils literal notranslate"><span class="pre">season</span></code>). Defaults to <code class="docutils literal notranslate"><span class="pre">season</span></code>.</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – The amount of teams to include on the leaderboard. Defaults to <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#asyncnt.HTTPException" title="asyncnt.HTTPException"><strong>asyncnt.HTTPException</strong></a> – Getting the leaderboard failed.</p></li>
+<li><p><a class="reference internal" href="exceptions.html#asyncnt.InvalidArgument" title="asyncnt.InvalidArgument"><strong>asyncnt.InvalidArgument</strong></a> – An argument provided is invalid.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The raw leaderboard.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Optional[List[Dict]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="asyncnt.Session.get_loot">
 <em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_loot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#asyncnt.Loot" title="asyncnt.Loot"><span class="pre">asyncnt.Loot</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_loot" title="Permalink to this definition"></a></dt>
 <dd><p>Get loot with an ID.
@@ -190,6 +217,32 @@
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>Optional[<a class="reference internal" href="#asyncnt.Racer" title="asyncnt.Racer">asyncnt.Racer</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="asyncnt.Session.get_raw_leaderboard">
+<em class="property"><span class="pre">async</span> </em><span class="sig-name descname"><span class="pre">get_raw_leaderboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_period</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'weekly'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#asyncnt.Session.get_raw_leaderboard" title="Permalink to this definition"></a></dt>
+<dd><p>Get the raw leaderboard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_period</strong> (<em>str</em>) – The time period for the leaderboard (<code class="docutils literal notranslate"><span class="pre">weekly</span></code>, <code class="docutils literal notranslate"><span class="pre">season</span></code>). Defaults to <code class="docutils literal notranslate"><span class="pre">season</span></code>.</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – The amount of teams to include on the leaderboard. Defaults to <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#asyncnt.HTTPException" title="asyncnt.HTTPException"><strong>asyncnt.HTTPException</strong></a> – Getting the leaderboard failed.</p></li>
+<li><p><a class="reference internal" href="exceptions.html#asyncnt.InvalidArgument" title="asyncnt.InvalidArgument"><strong>asyncnt.InvalidArgument</strong></a> – An argument provided is invalid.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The raw leaderboard.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Optional[List[Dict]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -688,6 +741,27 @@
 <dd class="field-even"><p>List[Optional[<a class="reference internal" href="#asyncnt.Racer" title="asyncnt.Racer">asyncnt.Racer</a>]]</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="rankedteam-class">
+<h2>RankedTeam Class<a class="headerlink" href="#rankedteam-class" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="asyncnt.RankedTeam">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">asyncnt.</span></span><span class="sig-name descname"><span class="pre">RankedTeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scraper</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#asyncnt.RankedTeam" title="Permalink to this definition"></a></dt>
+<dd><p>A Nitro Type team, but with a <code class="docutils literal notranslate"><span class="pre">rank</span></code> attribute. Inherits from <a class="reference internal" href="#asyncnt.Team" title="asyncnt.Team"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncnt.Team</span></code></a>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asyncnt.RankedTeam.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><a class="headerlink" href="#asyncnt.RankedTeam.rank" title="Permalink to this definition"></a></dt>
+<dd><p>The team’s rank for the given time period.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="asyncnt.RankedTeam.time_period">
+<span class="sig-name descname"><span class="pre">time_period</span></span><a class="headerlink" href="#asyncnt.RankedTeam.time_period" title="Permalink to this definition"></a></dt>
+<dd><p>The time period that the rank corresponds to.</p>
 </dd></dl>
 
 </dd></dl>

@@ -142,6 +142,12 @@ Team Class
 
     .. autofunction:: asyncnt.Team.get_members
 
+RankedTeam Class
+----------------
+
+.. autoclass:: asyncnt.RankedTeam
+    :members:
+
 Car Class
 ---------
 
